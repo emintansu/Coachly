@@ -10,20 +10,15 @@ import * as z from 'zod';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { 
-  Dumbbell, 
+  Loader2, 
   ChevronRight, 
   ChevronLeft, 
-  Loader2, 
   Flame, 
-  Target, 
-  Activity,
+  Dumbbell, 
   Award,
-  Scale,
-  Calendar,
-  Apple
+  ChevronLast
 } from 'lucide-react';
 
-// Validation Schema using Zod
 const onboardingSchema = z.object({
   goal: z.enum(['lose_weight', 'gain_muscle', 'maintain']),
   height: z.coerce.number().min(100, 'Height must be at least 100 cm').max(250, 'Height must be below 250 cm'),
@@ -45,14 +40,15 @@ export default function OnboardingPage() {
   const [loadingUser, setLoadingUser] = useState(true);
   const [saving, setSaving] = useState(false);
   const supabase = createClient();
-  const totalSteps = 4;
+  const totalSteps = 8;
 
   const {
     register,
     handleSubmit,
     setValue,
     watch,
-    formState: { errors, isValid },
+    trigger,
+    formState: { errors },
   } = useForm<OnboardingValues>({
     resolver: zodResolver(onboardingSchema) as any,
     mode: 'onChange',
@@ -80,7 +76,6 @@ export default function OnboardingPage() {
       if (!user) {
         router.push('/auth?mode=login');
       } else {
-        // If user already completed onboarding, skip directly to dashboard
         const { data: profile } = await supabase
           .from('profiles')
           .select('goal')
@@ -129,8 +124,19 @@ export default function OnboardingPage() {
     }
   };
 
-  const nextStep = () => {
-    if (step < totalSteps) {
+  // Custom step validator before moving next
+  const handleNext = async () => {
+    let isValidStep = false;
+    if (step === 1) isValidStep = await trigger('goal');
+    else if (step === 2) isValidStep = await trigger('age');
+    else if (step === 3) isValidStep = await trigger('height');
+    else if (step === 4) isValidStep = await trigger('weight');
+    else if (step === 5) isValidStep = await trigger('activity_level');
+    else if (step === 6) isValidStep = await trigger('training_days');
+    else if (step === 7) isValidStep = await trigger('equipment');
+    else if (step === 8) isValidStep = await trigger('diet_preference');
+
+    if (isValidStep && step < totalSteps) {
       setStep(prev => prev + 1);
     }
   };
@@ -149,7 +155,6 @@ export default function OnboardingPage() {
     );
   }
 
-  // Slide animations config
   const slideVariants = {
     hidden: { opacity: 0, x: 50 },
     visible: { opacity: 1, x: 0, transition: { duration: 0.3 } },
@@ -157,41 +162,33 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="flex-1 flex flex-col justify-center items-center px-4 py-12 relative">
+    <div className="flex-1 flex flex-col justify-center items-center px-4 py-8 relative">
       {/* Background neon glows */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-violet-600/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="w-full max-w-2xl relative z-10 flex flex-col items-center">
-        {/* Onboarding Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-extrabold text-white tracking-tight sm:text-4xl mb-2">
-            {t('title')}
-          </h1>
-          <p className="text-slate-400 text-sm max-w-md mx-auto">
-            {t('subtitle')}
-          </p>
+      <div className="w-full max-w-xl relative z-10 flex flex-col items-center">
+        
+        {/* Progress header */}
+        <div className="w-full mb-6">
+          <div className="flex justify-between items-center text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+            <span>{t('step', { current: step, total: totalSteps })}</span>
+            <span className="text-emerald-400">{Math.round((step / totalSteps) * 100)}%</span>
+          </div>
+          <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-emerald-500 to-violet-600 transition-all duration-300"
+              style={{ width: `${(step / totalSteps) * 100}%` }}
+            />
+          </div>
         </div>
 
-        {/* Multi-step Container */}
-        <div className="w-full rounded-2xl border border-white/10 bg-[#12121a]/90 p-8 shadow-2xl backdrop-blur-md">
-          {/* Progress bar */}
-          <div className="w-full mb-8">
-            <div className="flex justify-between items-center text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
-              <span>{t('step', { current: step, total: totalSteps })}</span>
-              <span className="text-emerald-400">{Math.round((step / totalSteps) * 100)}%</span>
-            </div>
-            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-gradient-to-r from-emerald-500 to-violet-600 transition-all duration-300"
-                style={{ width: `${(step / totalSteps) * 100}%` }}
-              />
-            </div>
-          </div>
-
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 min-h-[300px] flex flex-col justify-between">
+        {/* Form Box */}
+        <div className="w-full rounded-2xl border border-white/10 bg-[#12121a]/95 p-8 shadow-2xl backdrop-blur-md">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 min-h-[340px] flex flex-col justify-between">
             <AnimatePresence mode="wait">
-              {/* STEP 1: GOALS */}
+              
+              {/* STEP 1: GOAL */}
               {step === 1 && (
                 <motion.div
                   key="step1"
@@ -201,12 +198,14 @@ export default function OnboardingPage() {
                   exit="exit"
                   className="space-y-6"
                 >
-                  <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                    <Target className="h-5 w-5 text-emerald-400" />
-                    {t('goals.title')}
-                  </h2>
+                  <div className="space-y-1">
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                      {t('goals.title')}
+                    </h2>
+                    <p className="text-xs text-slate-400">{t('subtitle')}</p>
+                  </div>
 
-                  <div className="grid grid-cols-1 gap-4">
+                  <div className="grid grid-cols-1 gap-3.5">
                     {/* Goal Card 1 */}
                     <button
                       type="button"
@@ -267,7 +266,7 @@ export default function OnboardingPage() {
                 </motion.div>
               )}
 
-              {/* STEP 2: METRICS */}
+              {/* STEP 2: AGE */}
               {step === 2 && (
                 <motion.div
                   key="step2"
@@ -277,84 +276,33 @@ export default function OnboardingPage() {
                   exit="exit"
                   className="space-y-6"
                 >
-                  <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                    <Scale className="h-5 w-5 text-emerald-400" />
-                    {t('metrics.title')}
-                  </h2>
+                  <div className="space-y-1">
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                      {locale === 'tr' ? 'Yaşınız Kaç?' : 'How Old Are You?'}
+                    </h2>
+                    <p className="text-xs text-slate-400">
+                      {locale === 'tr' ? 'Bize kaç yaşında olduğunuzu yazın.' : 'Tell us your current age.'}
+                    </p>
+                  </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    {/* Age Input */}
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                        {t('metrics.age')}
-                      </label>
+                  <div className="flex flex-col items-center py-6">
+                    <div className="relative max-w-[200px] w-full text-center">
                       <input
                         type="number"
                         {...register('age')}
-                        className="w-full h-11 px-4 rounded-lg border border-white/10 bg-white/5 text-slate-100 text-sm focus:outline-none focus:border-emerald-500/50"
+                        autoFocus
+                        className="w-full text-center text-5xl font-black bg-transparent border-b-2 border-white/10 hover:border-white/20 focus:border-emerald-500 focus:outline-none pb-2 text-white placeholder-slate-800"
+                        placeholder="25"
                       />
-                      {errors.age && (
-                        <p className="text-xs text-red-400">{errors.age.message}</p>
-                      )}
                     </div>
-
-                    {/* Height Input */}
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                        {t('metrics.height')}
-                      </label>
-                      <input
-                        type="number"
-                        {...register('height')}
-                        className="w-full h-11 px-4 rounded-lg border border-white/10 bg-white/5 text-slate-100 text-sm focus:outline-none focus:border-emerald-500/50"
-                      />
-                      {errors.height && (
-                        <p className="text-xs text-red-400">{errors.height.message}</p>
-                      )}
-                    </div>
-
-                    {/* Weight Input */}
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                        {t('metrics.weight')}
-                      </label>
-                      <input
-                        type="number"
-                        {...register('weight')}
-                        className="w-full h-11 px-4 rounded-lg border border-white/10 bg-white/5 text-slate-100 text-sm focus:outline-none focus:border-emerald-500/50"
-                      />
-                      {errors.weight && (
-                        <p className="text-xs text-red-400">{errors.weight.message}</p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Activity Level Selector */}
-                  <div className="space-y-2">
-                    <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                      {t('metrics.activity')}
-                    </label>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {['sedentary', 'lightly_active', 'moderately_active', 'very_active'].map((level) => (
-                        <button
-                          key={level}
-                          type="button"
-                          onClick={() => setValue('activity_level', level as any, { shouldValidate: true })}
-                          className={`p-3 rounded-lg border text-left text-xs font-medium transition-all duration-200 ${
-                            selectedActivity === level
-                              ? 'border-emerald-500 bg-emerald-500/5 text-white'
-                              : 'border-white/5 bg-white/[0.01] hover:bg-white/5 text-slate-400'
-                          }`}
-                        >
-                          {t(`metrics.${level}`)}
-                        </button>
-                      ))}
-                    </div>
+                    {errors.age && (
+                      <p className="text-xs text-red-400 mt-3 text-center">{errors.age.message}</p>
+                    )}
                   </div>
                 </motion.div>
               )}
 
-              {/* STEP 3: SCHEDULE & EQUIPMENT */}
+              {/* STEP 3: HEIGHT */}
               {step === 3 && (
                 <motion.div
                   key="step3"
@@ -364,60 +312,34 @@ export default function OnboardingPage() {
                   exit="exit"
                   className="space-y-6"
                 >
-                  <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                    <Calendar className="h-5 w-5 text-emerald-400" />
-                    {t('schedule.title')}
-                  </h2>
-
-                  {/* Days Selector */}
-                  <div className="space-y-3">
-                    <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                      {t('schedule.days')}
-                    </label>
-                    <div className="flex gap-2.5">
-                      {[1, 2, 3, 4, 5, 6, 7].map((day) => (
-                        <button
-                          key={day}
-                          type="button"
-                          onClick={() => setValue('training_days', day, { shouldValidate: true })}
-                          className={`flex-1 h-11 rounded-lg border text-center font-bold text-sm transition-all duration-200 ${
-                            selectedDays === day
-                              ? 'border-emerald-500 bg-emerald-500/5 text-emerald-400'
-                              : 'border-white/5 bg-white/[0.01] hover:bg-white/5 text-slate-400'
-                          }`}
-                        >
-                          {day}
-                        </button>
-                      ))}
-                    </div>
+                  <div className="space-y-1">
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                      {locale === 'tr' ? 'Boyunuz Kaç?' : 'How Tall Are You?'}
+                    </h2>
+                    <p className="text-xs text-slate-400">
+                      {locale === 'tr' ? 'Santimetre (cm) cinsinden yazın.' : 'Enter your height in centimeters.'}
+                    </p>
                   </div>
 
-                  {/* Equipment Selector */}
-                  <div className="space-y-3">
-                    <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                      {t('schedule.equipment')}
-                    </label>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                      {['none', 'dumbbells', 'full_gym'].map((eq) => (
-                        <button
-                          key={eq}
-                          type="button"
-                          onClick={() => setValue('equipment', eq as any, { shouldValidate: true })}
-                          className={`p-4 rounded-xl border text-center transition-all duration-200 ${
-                            selectedEquipment === eq
-                              ? 'border-emerald-500 bg-emerald-500/5 text-emerald-400 shadow-md'
-                              : 'border-white/5 bg-white/[0.01] hover:bg-white/5 text-slate-400'
-                          }`}
-                        >
-                          <span className="block text-xs font-bold text-white">{t(`schedule.eq_${eq}`)}</span>
-                        </button>
-                      ))}
+                  <div className="flex flex-col items-center py-6">
+                    <div className="relative max-w-[200px] w-full text-center flex items-end justify-center">
+                      <input
+                        type="number"
+                        {...register('height')}
+                        autoFocus
+                        className="w-full text-center text-5xl font-black bg-transparent border-b-2 border-white/10 hover:border-white/20 focus:border-emerald-500 focus:outline-none pb-2 text-white placeholder-slate-800"
+                        placeholder="175"
+                      />
+                      <span className="text-xl font-bold text-slate-500 ml-2 mb-2">cm</span>
                     </div>
+                    {errors.height && (
+                      <p className="text-xs text-red-400 mt-3 text-center">{errors.height.message}</p>
+                    )}
                   </div>
                 </motion.div>
               )}
 
-              {/* STEP 4: NUTRITION */}
+              {/* STEP 4: WEIGHT */}
               {step === 4 && (
                 <motion.div
                   key="step4"
@@ -427,35 +349,187 @@ export default function OnboardingPage() {
                   exit="exit"
                   className="space-y-6"
                 >
-                  <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                    <Apple className="h-5 w-5 text-emerald-400" />
-                    {t('nutrition.title')}
-                  </h2>
+                  <div className="space-y-1">
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                      {locale === 'tr' ? 'Kilonuz Kaç?' : 'How Much Do You Weigh?'}
+                    </h2>
+                    <p className="text-xs text-slate-400">
+                      {locale === 'tr' ? 'Kilogram (kg) cinsinden yazın.' : 'Enter your weight in kilograms.'}
+                    </p>
+                  </div>
 
-                  {/* Diet Type Selector */}
-                  <div className="space-y-3">
-                    <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                      {t('nutrition.diet')}
-                    </label>
-                    <div className="grid grid-cols-1 gap-2.5">
-                      {['standard', 'vegetarian', 'vegan', 'keto', 'high_protein'].map((diet) => (
+                  <div className="flex flex-col items-center py-6">
+                    <div className="relative max-w-[200px] w-full text-center flex items-end justify-center">
+                      <input
+                        type="number"
+                        {...register('weight')}
+                        autoFocus
+                        className="w-full text-center text-5xl font-black bg-transparent border-b-2 border-white/10 hover:border-white/20 focus:border-emerald-500 focus:outline-none pb-2 text-white placeholder-slate-800"
+                        placeholder="70"
+                      />
+                      <span className="text-xl font-bold text-slate-500 ml-2 mb-2">kg</span>
+                    </div>
+                    {errors.weight && (
+                      <p className="text-xs text-red-400 mt-3 text-center">{errors.weight.message}</p>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* STEP 5: ACTIVITY LEVEL */}
+              {step === 5 && (
+                <motion.div
+                  key="step5"
+                  variants={slideVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="space-y-6"
+                >
+                  <div className="space-y-1">
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                      {t('metrics.activity')}
+                    </h2>
+                    <p className="text-xs text-slate-400">
+                      {locale === 'tr' ? 'Günlük hareketlilik seviyenizi seçin.' : 'Select your daily mobility level.'}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-3">
+                    {['sedentary', 'lightly_active', 'moderately_active', 'very_active'].map((level) => (
+                      <button
+                        key={level}
+                        type="button"
+                        onClick={() => setValue('activity_level', level as any, { shouldValidate: true })}
+                        className={`p-4 rounded-xl border text-left text-sm font-semibold transition-all duration-200 ${
+                          selectedActivity === level
+                            ? 'border-emerald-500 bg-emerald-500/5 text-white shadow-md'
+                            : 'border-white/5 bg-white/[0.02] hover:bg-white/5 text-slate-400'
+                        }`}
+                      >
+                        {t(`metrics.${level}`)}
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* STEP 6: WEEKLY DAYS */}
+              {step === 6 && (
+                <motion.div
+                  key="step6"
+                  variants={slideVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="space-y-6"
+                >
+                  <div className="space-y-1">
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                      {t('schedule.days')}
+                    </h2>
+                    <p className="text-xs text-slate-400">
+                      {locale === 'tr' ? 'Haftada kaç gün antrenman yapmak istersiniz?' : 'How many days do you want to train per week?'}
+                    </p>
+                  </div>
+
+                  <div className="flex justify-center py-6">
+                    <div className="flex flex-wrap justify-center gap-3 max-w-[340px]">
+                      {[1, 2, 3, 4, 5, 6, 7].map((day) => (
                         <button
-                          key={diet}
+                          key={day}
                           type="button"
-                          onClick={() => setValue('diet_preference', diet as any, { shouldValidate: true })}
-                          className={`p-3.5 rounded-lg border text-left text-sm font-semibold transition-all duration-200 ${
-                            selectedDiet === diet
-                              ? 'border-emerald-500 bg-emerald-500/5 text-white'
-                              : 'border-white/5 bg-white/[0.01] hover:bg-white/5 text-slate-400'
+                          onClick={() => setValue('training_days', day, { shouldValidate: true })}
+                          className={`h-14 w-14 rounded-full border text-center font-black text-base transition-all duration-200 ${
+                            selectedDays === day
+                              ? 'border-emerald-500 bg-emerald-500/5 text-emerald-400 shadow-md'
+                              : 'border-white/5 bg-white/[0.02] hover:bg-white/5 text-slate-400'
                           }`}
                         >
-                          {t(`nutrition.${diet}`)}
+                          {day}
                         </button>
                       ))}
                     </div>
                   </div>
                 </motion.div>
               )}
+
+              {/* STEP 7: EQUIPMENT */}
+              {step === 7 && (
+                <motion.div
+                  key="step7"
+                  variants={slideVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="space-y-6"
+                >
+                  <div className="space-y-1">
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                      {t('schedule.equipment')}
+                    </h2>
+                    <p className="text-xs text-slate-400">
+                      {locale === 'tr' ? 'Çalışırken hangi araçlara erişiminiz var?' : 'Which equipment do you have access to?'}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-3.5">
+                    {['none', 'dumbbells', 'full_gym'].map((eq) => (
+                      <button
+                        key={eq}
+                        type="button"
+                        onClick={() => setValue('equipment', eq as any, { shouldValidate: true })}
+                        className={`p-5 rounded-xl border text-center transition-all duration-200 ${
+                          selectedEquipment === eq
+                            ? 'border-emerald-500 bg-emerald-500/5 text-emerald-400 shadow-md'
+                            : 'border-white/5 bg-white/[0.02] hover:bg-white/5 text-slate-400'
+                        }`}
+                      >
+                        <span className="block text-sm font-extrabold text-white">{t(`schedule.eq_${eq}`)}</span>
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* STEP 8: DIET PREFERENCE */}
+              {step === 8 && (
+                <motion.div
+                  key="step8"
+                  variants={slideVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="space-y-6"
+                >
+                  <div className="space-y-1">
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                      {t('nutrition.title')}
+                    </h2>
+                    <p className="text-xs text-slate-400">
+                      {t('nutrition.diet')}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-3">
+                    {['standard', 'vegetarian', 'vegan', 'keto', 'high_protein'].map((diet) => (
+                      <button
+                        key={diet}
+                        type="button"
+                        onClick={() => setValue('diet_preference', diet as any, { shouldValidate: true })}
+                        className={`p-4 rounded-xl border text-left text-sm font-semibold transition-all duration-200 ${
+                          selectedDiet === diet
+                            ? 'border-emerald-500 bg-emerald-500/5 text-white shadow-md'
+                            : 'border-white/5 bg-white/[0.02] hover:bg-white/5 text-slate-400'
+                        }`}
+                      >
+                        {t(`nutrition.${diet}`)}
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
             </AnimatePresence>
 
             {/* Navigation buttons */}
@@ -474,8 +548,8 @@ export default function OnboardingPage() {
               {step < totalSteps ? (
                 <Button
                   type="button"
-                  onClick={nextStep}
-                  className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:brightness-110 text-white font-bold"
+                  onClick={handleNext}
+                  className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:brightness-110 text-white font-bold h-11 px-6 rounded-lg"
                 >
                   {t('next')}
                   <ChevronRight className="h-4 w-4" />
@@ -483,13 +557,16 @@ export default function OnboardingPage() {
               ) : (
                 <Button
                   type="submit"
-                  disabled={saving || !isValid}
-                  className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:brightness-110 text-white font-bold"
+                  disabled={saving}
+                  className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:brightness-110 text-white font-bold h-11 px-6 rounded-lg shadow-lg"
                 >
                   {saving ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
-                    t('finish')
+                    <>
+                      {t('finish')}
+                      <ChevronLast className="h-4 w-4" />
+                    </>
                   )}
                 </Button>
               )}
