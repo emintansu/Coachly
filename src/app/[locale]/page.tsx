@@ -47,6 +47,7 @@ export default function LandingPage() {
             
             <div className="flex flex-wrap gap-4 pt-2 w-full sm:w-auto">
               <Link
+                id="landing-signup-btn"
                 href="/auth?mode=signup"
                 className="w-full sm:w-auto inline-flex h-12 items-center justify-center rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 px-8 text-sm font-bold text-white shadow-xl shadow-emerald-500/10 hover:shadow-emerald-500/20 hover:brightness-110 active:scale-98 transition-all duration-200"
               >
@@ -54,6 +55,7 @@ export default function LandingPage() {
               </Link>
               
               <Link
+                id="landing-login-btn"
                 href="/auth?mode=login"
                 className="w-full sm:w-auto inline-flex h-12 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-8 text-sm font-bold text-slate-200 hover:bg-white/10 hover:text-white active:scale-98 transition-all duration-200"
               >

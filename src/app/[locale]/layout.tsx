@@ -17,10 +17,26 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Coachly - AI Personal Workout Coach",
-  description: "Reach your training and nutrition goals with dynamic weekly plans tailored by AI.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  
+  const title = locale === "tr" 
+    ? "Coachly - Yapay Zeka Destekli Kişisel Antrenman Koçu" 
+    : "Coachly - AI Personal Workout Coach";
+    
+  const description = locale === "tr"
+    ? "Yapay zeka tarafından size özel hazırlanan dinamik haftalık planlarla antrenman ve beslenme hedeflerinize ulaşın."
+    : "Reach your training and nutrition goals with dynamic weekly plans tailored by AI.";
+
+  return {
+    title,
+    description,
+  };
+}
 
 export default async function LocaleLayout({
   children,

@@ -132,7 +132,7 @@ export default function AuthPage() {
       <div className="w-full max-w-md relative z-10">
         {/* Brand logo header */}
         <div className="flex flex-col items-center mb-8">
-          <Link href="/" className="flex items-center gap-2 group mb-2">
+          <Link id="auth-logo-link" href="/" className="flex items-center gap-2 group mb-2">
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-500 to-violet-600 shadow-lg shadow-emerald-500/10 group-hover:scale-105 transition-transform duration-300">
               <Dumbbell className="h-5.5 w-5.5 text-white" />
             </div>
@@ -171,6 +171,7 @@ export default function AuthPage() {
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
                   <input
+                    id="auth-fullname-input"
                     type="text"
                     {...register('fullName')}
                     className="w-full h-11 pl-10 pr-4 rounded-lg border border-white/10 bg-white/5 text-slate-100 text-sm placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 transition-colors"
@@ -188,6 +189,7 @@ export default function AuthPage() {
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
                 <input
+                  id="auth-email-input"
                   type="email"
                   {...register('email')}
                   className="w-full h-11 pl-10 pr-4 rounded-lg border border-white/10 bg-white/5 text-slate-100 text-sm placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 transition-colors"
@@ -208,6 +210,7 @@ export default function AuthPage() {
                 </label>
                 {isLogin && (
                   <button
+                    id="auth-forgot-password-btn"
                     type="button"
                     className="text-xs font-medium text-emerald-400 hover:text-emerald-300 transition-colors"
                   >
@@ -218,6 +221,7 @@ export default function AuthPage() {
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
                 <input
+                  id="auth-password-input"
                   type="password"
                   {...register('password')}
                   className="w-full h-11 pl-10 pr-4 rounded-lg border border-white/10 bg-white/5 text-slate-100 text-sm placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 transition-colors"
@@ -232,6 +236,7 @@ export default function AuthPage() {
 
             {/* Submit Button */}
             <Button
+              id="auth-submit-btn"
               type="submit"
               disabled={isPending}
               className="w-full h-11 mt-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:brightness-110 text-white font-bold rounded-lg shadow-lg shadow-emerald-500/10 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
@@ -249,6 +254,7 @@ export default function AuthPage() {
           {/* Toggle form view link */}
           <div className="mt-6 pt-6 border-t border-white/5 text-center">
             <button
+              id="auth-toggle-mode-btn"
               onClick={toggleMode}
               className="text-sm text-slate-400 hover:text-emerald-400 transition-colors duration-200"
             >

@@ -17,6 +17,7 @@ export default function LanguageSwitcher() {
 
   return (
     <Button
+      id="language-switcher-btn"
       variant="ghost"
       size="sm"
       onClick={toggleLanguage}
