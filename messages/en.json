@@ -92,5 +92,34 @@
     "saveSuccess": "Profile updated successfully!",
     "saveError": "Error updating profile.",
     "backToDashboard": "Back to Dashboard"
+  },
+  "Dashboard": {
+    "title": "Workout Dashboard",
+    "noActivePlan": "You don't have an active training plan yet. Generate your first plan customized to your profile details with one click!",
+    "generateNewPlan": "Generate Plan with AI",
+    "generating": "Preparing AI Plan...",
+    "workoutPlan": "Workout Program",
+    "nutritionPlan": "Supporting Nutrition Plan",
+    "deleteConfirm": "Are you sure you want to delete this workout plan?",
+    "editExercise": "Edit Exercise",
+    "exerciseName": "Exercise Name",
+    "sets": "Sets Count",
+    "reps": "Reps / Duration",
+    "rest": "Rest Duration (sec)",
+    "notes": "Notes (Optional)",
+    "activePlan": "Active Program",
+    "myPlans": "My Saved Plans",
+    "nutritionMeals": {
+      "breakfast": "Breakfast",
+      "lunch": "Lunch",
+      "dinner": "Dinner",
+      "snacks": "Snacks / Mid-meal"
+    },
+    "macroSummary": "Target Macros & Calories",
+    "protein": "Protein",
+    "carbs": "Carbohydrates",
+    "fat": "Fat",
+    "calories": "Calories",
+    "generalTips": "Nutrition Tips"
   }
 }

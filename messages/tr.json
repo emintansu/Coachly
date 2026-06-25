@@ -92,5 +92,34 @@
     "saveSuccess": "Profiliniz başarıyla güncellendi!",
     "saveError": "Profil güncellenirken bir hata oluştu.",
     "backToDashboard": "Panele Dön"
+  },
+  "Dashboard": {
+    "title": "Antrenman Paneli",
+    "noActivePlan": "Henüz oluşturulmuş bir antrenman programınız yok. Profil bilgilerinize özel ilk planınızı tek tıkla hemen üretin!",
+    "generateNewPlan": "Yapay Zeka ile Yeni Plan Oluştur",
+    "generating": "AI Planı Hazırlanıyor...",
+    "workoutPlan": "Antrenman Programı",
+    "nutritionPlan": "Destekleyici Beslenme Önerisi",
+    "deleteConfirm": "Bu antrenman planını silmek istediğinizden emin misiniz?",
+    "editExercise": "Hareketi Düzenle",
+    "exerciseName": "Hareket Adı",
+    "sets": "Set Sayısı",
+    "reps": "Tekrar / Süre",
+    "rest": "Dinlenme Süresi (sn)",
+    "notes": "Notlar (İsteğe Bağlı)",
+    "activePlan": "Aktif Program",
+    "myPlans": "Geçmiş Planlarım",
+    "nutritionMeals": {
+      "breakfast": "Kahvaltı",
+      "lunch": "Öğle Yemeği",
+      "dinner": "Akşam Yemeği",
+      "snacks": "Ara Öğün / Atıştırmalık"
+    },
+    "macroSummary": "Hedef Makro & Kalori Değerleri",
+    "protein": "Protein",
+    "carbs": "Karbonhidrat",
+    "fat": "Yağ",
+    "calories": "Kalori",
+    "generalTips": "Beslenme İpuçları"
   }
 }
