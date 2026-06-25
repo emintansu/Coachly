@@ -663,9 +663,11 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
 
                 <div className="grid grid-cols-3 gap-3">
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                      {t('sets')}
-                    </label>
+                    <div className="min-h-[32px] flex items-end">
+                      <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                        {t('sets')}
+                      </label>
+                    </div>
                     <input
                       type="number"
                       value={editingExercise.sets}
@@ -676,9 +678,11 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                      {t('reps')}
-                    </label>
+                    <div className="min-h-[32px] flex items-end">
+                      <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                        {t('reps')}
+                      </label>
+                    </div>
                     <input
                       type="text"
                       value={editingExercise.reps_or_duration}
@@ -689,9 +693,11 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                      {t('rest')}
-                    </label>
+                    <div className="min-h-[32px] flex items-end">
+                      <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                        {t('rest')}
+                      </label>
+                    </div>
                     <input
                       type="number"
                       value={editingExercise.rest_seconds}
