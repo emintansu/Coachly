@@ -37,6 +37,7 @@ type ProfileValues = z.infer<typeof profileSchema>;
 export default function SettingsPage() {
   const t = useTranslations('Onboarding');
   const tSettings = useTranslations('Settings');
+  const tCommon = useTranslations('Common');
   const locale = useLocale();
   const router = useRouter();
   
@@ -352,7 +353,7 @@ export default function SettingsPage() {
               ) : (
                 <>
                   <Save className="h-4 w-4" />
-                  {tSettings('save')}
+                  {tCommon('save')}
                 </>
               )}
             </Button>
