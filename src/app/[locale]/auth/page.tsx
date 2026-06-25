@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
-import { Dumbbell, Mail, Lock, User, AlertCircle, Loader2 } from 'lucide-react';
+import { Dumbbell, Mail, Lock, User, AlertCircle, Loader2, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 
 const authSchema = z.object({
@@ -32,6 +32,7 @@ export default function AuthPage() {
   const isLogin = modeParam !== 'signup';
   
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const supabase = createClient();
 
@@ -51,6 +52,7 @@ export default function AuthPage() {
 
   const onSubmit = async (values: AuthFormValues) => {
     setError(null);
+    setSuccessMessage(null);
     
     startTransition(async () => {
       try {
@@ -66,7 +68,7 @@ export default function AuthPage() {
           }
         } else {
           // Sign up
-          const { error: signUpError } = await supabase.auth.signUp({
+          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
             email: values.email,
             password: values.password,
             options: {
@@ -78,6 +80,15 @@ export default function AuthPage() {
           
           if (signUpError) {
             setError(locale === 'tr' ? 'Kayıt başarısız: ' + signUpError.message : signUpError.message);
+            return;
+          }
+
+          if (signUpData.user && !signUpData.session) {
+            setSuccessMessage(
+              locale === 'tr'
+                ? 'Kayıt başarılı! Lütfen e-posta kutunuzu kontrol edin ve gelen onay linkine tıklayın.'
+                : 'Registration successful! Please check your inbox and click the verification link.'
+            );
             return;
           }
         }
@@ -107,6 +118,7 @@ export default function AuthPage() {
 
   const toggleMode = () => {
     setError(null);
+    setSuccessMessage(null);
     reset();
     router.push(isLogin ? '/auth?mode=signup' : '/auth?mode=login');
   };
@@ -139,6 +151,13 @@ export default function AuthPage() {
             <div className="flex items-start gap-2.5 p-3.5 mb-6 rounded-xl border border-red-500/30 bg-red-500/5 text-red-200 text-sm">
               <AlertCircle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
               <span>{error}</span>
+            </div>
+          )}
+
+          {successMessage && (
+            <div className="flex items-start gap-2.5 p-3.5 mb-6 rounded-xl border border-emerald-500/30 bg-emerald-500/5 text-emerald-200 text-sm">
+              <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
+              <span>{successMessage}</span>
             </div>
           )}
 
