@@ -1,0 +1,96 @@
+{
+  "Common": {
+    "appName": "Coachly",
+    "logout": "Log Out",
+    "login": "Log In",
+    "signup": "Sign Up",
+    "profile": "Profile",
+    "settings": "Settings",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "loading": "Loading...",
+    "language": "Language",
+    "turkish": "Türkçe",
+    "english": "English",
+    "active": "Active",
+    "history": "History",
+    "required": "This field is required"
+  },
+  "Landing": {
+    "title": "Your Personal AI Workout Coach",
+    "subtitle": "Reach your goals with personalized weekly workout plans and diet suggestions.",
+    "ctaStart": "Get Started",
+    "features": "Core Features",
+    "aiWorkout": "AI Workout Plan",
+    "aiWorkoutDesc": "Day-by-day workout plans tailored to your goals, body stats, and equipment.",
+    "dietSupport": "Nutrition Guidance",
+    "dietSupportDesc": "Daily meal templates and macronutrient guides to fuel your workouts.",
+    "interactive": "Interactive Planners",
+    "interactiveDesc": "Update your plan however you like, customize sets and reps for any exercise."
+  },
+  "Auth": {
+    "email": "Email",
+    "password": "Password",
+    "fullName": "Full Name",
+    "noAccount": "Don't have an account? Sign up",
+    "hasAccount": "Already have an account? Log in",
+    "forgotPassword": "Forgot Password",
+    "welcomeBack": "Welcome Back",
+    "createAccount": "Create Account"
+  },
+  "Onboarding": {
+    "title": "Introduce Yourself",
+    "subtitle": "Answer a few quick questions so we can generate the perfect plan for you.",
+    "step": "Step {current} / {total}",
+    "next": "Next",
+    "back": "Back",
+    "finish": "Finish",
+    "goals": {
+      "title": "What is Your Goal?",
+      "lose_weight": "Lose Weight",
+      "lose_weight_desc": "Burn fat and get a leaner, more toned physique.",
+      "gain_muscle": "Build Muscle",
+      "gain_muscle_desc": "Gain strength and increase muscle mass.",
+      "maintain": "Maintain Shape",
+      "maintain_desc": "Keep your current weight and overall fitness level."
+    },
+    "metrics": {
+      "title": "Your Body Metrics",
+      "height": "Height (cm)",
+      "weight": "Weight (kg)",
+      "age": "Age",
+      "activity": "Activity Level",
+      "sedentary": "Sedentary (Little to no exercise)",
+      "lightly_active": "Lightly Active (1-3 days of light exercise/week)",
+      "moderately_active": "Moderately Active (3-5 days of moderate exercise/week)",
+      "very_active": "Very Active (6-7 days of heavy exercise/week)"
+    },
+    "schedule": {
+      "title": "Schedule and Equipment",
+      "days": "How Many Days Can You Work Out per Week?",
+      "days_unit": "days",
+      "equipment": "Available Equipment",
+      "eq_none": "Bodyweight Only (No Equipment)",
+      "eq_dumbbells": "Dumbbells Only",
+      "eq_full_gym": "Fully Equipped Gym"
+    },
+    "nutrition": {
+      "title": "Diet Preference",
+      "diet": "Diet Type",
+      "standard": "Standard (Eat everything)",
+      "vegetarian": "Vegetarian",
+      "vegan": "Vegan",
+      "keto": "Keto / Low Carb",
+      "high_protein": "High Protein"
+    }
+  },
+  "Settings": {
+    "title": "Profile Settings",
+    "saveSuccess": "Profile updated successfully!",
+    "saveError": "Error updating profile.",
+    "backToDashboard": "Back to Dashboard"
+  }
+}

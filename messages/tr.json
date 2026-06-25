@@ -1,0 +1,96 @@
+{
+  "Common": {
+    "appName": "Coachly",
+    "logout": "Çıkış Yap",
+    "login": "Giriş Yap",
+    "signup": "Kayıt Ol",
+    "profile": "Profil",
+    "settings": "Ayarlar",
+    "save": "Kaydet",
+    "edit": "Düzenle",
+    "delete": "Sil",
+    "cancel": "İptal",
+    "confirm": "Onayla",
+    "loading": "Yükleniyor...",
+    "language": "Dil",
+    "turkish": "Türkçe",
+    "english": "English",
+    "active": "Aktif",
+    "history": "Geçmiş",
+    "required": "Bu alan zorunludur"
+  },
+  "Landing": {
+    "title": "Kişisel AI Antrenman Koçunuz",
+    "subtitle": "Kişiselleştirilmiş haftalık antrenman planları ve diyet önerileri ile hedeflerinize ulaşın.",
+    "ctaStart": "Hemen Başla",
+    "features": "Öne Çıkan Özellikler",
+    "aiWorkout": "AI Antrenman Planı",
+    "aiWorkoutDesc": "Hedeflerinize, vücut bilgilerinize ve ekipmanlarınıza özel gün gün antrenman planları.",
+    "dietSupport": "Destekleyici Beslenme",
+    "dietSupportDesc": "Antrenmanlarınızı destekleyecek günlük öğün şablonları ve kalori rehberi.",
+    "interactive": "Düzenlenebilir Planlar",
+    "interactiveDesc": "Planınızı dilediğiniz gibi güncelleyin, setleri/tekrarları kendinize göre ayarlayın."
+  },
+  "Auth": {
+    "email": "E-posta",
+    "password": "Şifre",
+    "fullName": "Ad Soyad",
+    "noAccount": "Hesabınız yok mu? Kayıt olun",
+    "hasAccount": "Zaten üye misiniz? Giriş yapın",
+    "forgotPassword": "Şifremi Unuttum",
+    "welcomeBack": "Tekrar Hoş Geldiniz",
+    "createAccount": "Hesap Oluşturun"
+  },
+  "Onboarding": {
+    "title": "Kendinizi Tanıtın",
+    "subtitle": "Size özel en iyi planı hazırlayabilmemiz için birkaç kısa soruya yanıt verin.",
+    "step": "Adım {current} / {total}",
+    "next": "İleri",
+    "back": "Geri",
+    "finish": "Tamamla",
+    "goals": {
+      "title": "Hedefiniz Nedir?",
+      "lose_weight": "Kilo Vermek",
+      "lose_weight_desc": "Yağ yakın ve daha fit bir görünüme kavuşun.",
+      "gain_muscle": "Kas Yapmak",
+      "gain_muscle_desc": "Güç kazanın ve hacim artışı hedefleyin.",
+      "maintain": "Formu Korumak",
+      "maintain_desc": "Mevcut kilonuzu ve kondisyonunuzu koruyun."
+    },
+    "metrics": {
+      "title": "Vücut Ölçüleriniz",
+      "height": "Boy (cm)",
+      "weight": "Kilo (kg)",
+      "age": "Yaş",
+      "activity": "Aktivite Seviyesi",
+      "sedentary": "Hareketsiz (Ofis çalışanı vb.)",
+      "lightly_active": "Hafif Aktif (Haftada 1-3 gün hafif spor)",
+      "moderately_active": "Orta Derece Aktif (Haftada 3-5 gün spor)",
+      "very_active": "Çok Aktif (Haftada 6-7 gün ağır spor)"
+    },
+    "schedule": {
+      "title": "Program ve Ekipman",
+      "days": "Haftada Kaç Gün Çalışabilirsiniz?",
+      "days_unit": "gün",
+      "equipment": "Kullanabileceğiniz Ekipmanlar",
+      "eq_none": "Ekipmansız (Vücut Ağırlığı)",
+      "eq_dumbbells": "Sadece Dumbbell",
+      "eq_full_gym": "Tam Donanımlı Spor Salonu"
+    },
+    "nutrition": {
+      "title": "Diyet Tercihiniz",
+      "diet": "Beslenme Tarzınız",
+      "standard": "Standart Beslenme (Her şey dahil)",
+      "vegetarian": "Vejetaryen",
+      "vegan": "Vegan",
+      "keto": "Keto / Düşük Karbonhidrat",
+      "high_protein": "Yüksek Protein"
+    }
+  },
+  "Settings": {
+    "title": "Profil Ayarları",
+    "saveSuccess": "Profiliniz başarıyla güncellendi!",
+    "saveError": "Profil güncellenirken bir hata oluştu.",
+    "backToDashboard": "Panele Dön"
+  }
+}
