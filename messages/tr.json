@@ -109,6 +109,7 @@
   "Dashboard": {
     "title": "Antrenman Paneli",
     "noActivePlan": "Henüz oluşturulmuş bir antrenman programınız yok. Profil bilgilerinize özel ilk planınızı tek tıkla hemen üretin!",
+    "noPlansFound": "Kayıtlı plan bulunamadı.",
     "generateNewPlan": "Yapay Zeka ile Yeni Plan Oluştur",
     "generating": "AI Planı Hazırlanıyor...",
     "workoutPlan": "Antrenman Programı",

@@ -254,7 +254,7 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
               <Loader2 className="h-6 w-6 animate-spin text-emerald-400" />
             </div>
           ) : plans.length === 0 ? (
-            <span className="block text-xs text-slate-500 font-medium">No plans found.</span>
+            <span className="block text-xs text-slate-500 font-medium">{t('noPlansFound')}</span>
           ) : (
             <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
               {plans.map((p) => (

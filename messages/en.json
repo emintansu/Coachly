@@ -109,6 +109,7 @@
   "Dashboard": {
     "title": "Workout Dashboard",
     "noActivePlan": "You don't have an active training plan yet. Generate your first plan customized to your profile details with one click!",
+    "noPlansFound": "No plans found.",
     "generateNewPlan": "Generate Plan with AI",
     "generating": "Preparing AI Plan...",
     "workoutPlan": "Workout Program",
