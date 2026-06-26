@@ -12,7 +12,8 @@ export default function LanguageSwitcher() {
 
   const toggleLanguage = () => {
     const nextLocale = locale === 'tr' ? 'en' : 'tr';
-    router.replace(pathname, { locale: nextLocale });
+    const search = typeof window !== 'undefined' ? window.location.search : '';
+    router.replace(`${pathname}${search}`, { locale: nextLocale });
   };
 
   return (
