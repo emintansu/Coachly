@@ -60,7 +60,7 @@ export default function OnboardingPage() {
       activity_level: 'moderately_active',
       training_days: 3,
       equipment: 'dumbbells',
-      diet_preference: 'standard',
+      diet_preference: undefined as any,
     },
   });
 
@@ -93,6 +93,7 @@ export default function OnboardingPage() {
   }, [router, supabase]);
 
   const onSubmit = async (values: OnboardingValues) => {
+    if (step < totalSteps) return;
     setSaving(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -527,6 +528,12 @@ export default function OnboardingPage() {
                       </button>
                     ))}
                   </div>
+
+                  {errors.diet_preference && (
+                    <p className="text-xs text-red-400 text-center mt-2">
+                      {locale === 'tr' ? 'Lütfen bir diyet tercihi seçin.' : 'Please select a diet preference.'}
+                    </p>
+                  )}
                 </motion.div>
               )}
 
@@ -547,6 +554,7 @@ export default function OnboardingPage() {
 
               {step < totalSteps ? (
                 <Button
+                  key="next-btn"
                   type="button"
                   onClick={handleNext}
                   className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:brightness-110 text-white font-bold h-11 px-6 rounded-lg"
@@ -556,6 +564,7 @@ export default function OnboardingPage() {
                 </Button>
               ) : (
                 <Button
+                  key="finish-btn"
                   type="submit"
                   disabled={saving}
                   className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:brightness-110 text-white font-bold h-11 px-6 rounded-lg shadow-lg"
