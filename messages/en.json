@@ -39,7 +39,20 @@
     "hasAccount": "Already have an account? Log in",
     "forgotPassword": "Forgot Password",
     "welcomeBack": "Welcome Back",
-    "createAccount": "Create Account"
+    "createAccount": "Create Account",
+    "emailPlaceholder": "you@example.com",
+    "fullNamePlaceholder": "John Doe",
+    "passwordPlaceholder": "••••••••",
+    "validation": {
+      "emailInvalid": "Invalid email address",
+      "passwordMinLength": "Password must be at least 6 characters"
+    },
+    "status": {
+      "loginFailed": "Login failed: Incorrect email or password.",
+      "signupFailed": "Registration failed: {message}",
+      "signupSuccess": "Registration successful! Please check your inbox and click the verification link.",
+      "authError": "Authentication error"
+    }
   },
   "Onboarding": {
     "title": "Introduce Yourself",

@@ -27,6 +27,7 @@ import {
   Zap,
   Info
 } from 'lucide-react';
+import Navbar from '@/components/Navbar';
 
 interface ProfileType {
   id: string;
@@ -175,7 +176,9 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
   const currentDay = activePlan?.plan_data?.workout_days?.[safeDayIdx];
 
   return (
-    <div className="flex-grow flex flex-col lg:flex-row w-full max-w-7xl mx-auto px-4 py-8 gap-8">
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      <div className="flex-grow flex flex-col lg:flex-row w-full max-w-7xl mx-auto px-4 py-8 gap-8">
       
       {/* SIDEBAR */}
       <aside className="w-full lg:w-80 space-y-6 shrink-0">
@@ -795,6 +798,7 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
         )}
       </AnimatePresence>
 
+      </div>
     </div>
   );
 }

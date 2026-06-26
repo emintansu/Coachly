@@ -39,7 +39,20 @@
     "hasAccount": "Zaten üye misiniz? Giriş yapın",
     "forgotPassword": "Şifremi Unuttum",
     "welcomeBack": "Tekrar Hoş Geldiniz",
-    "createAccount": "Hesap Oluşturun"
+    "createAccount": "Hesap Oluşturun",
+    "emailPlaceholder": "you@example.com",
+    "fullNamePlaceholder": "John Doe",
+    "passwordPlaceholder": "••••••••",
+    "validation": {
+      "emailInvalid": "Geçersiz e-posta adresi",
+      "passwordMinLength": "Şifre en az 6 karakter olmalıdır"
+    },
+    "status": {
+      "loginFailed": "Giriş yapılamadı: E-posta veya şifre hatalı.",
+      "signupFailed": "Kayıt başarısız: {message}",
+      "signupSuccess": "Kayıt başarılı! Lütfen e-posta kutunuzu kontrol edin ve gelen onay linkine tıklayın.",
+      "authError": "Kimlik doğrulama hatası"
+    }
   },
   "Onboarding": {
     "title": "Kendinizi Tanıtın",
