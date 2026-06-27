@@ -190,32 +190,32 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
               <User className="h-5 w-5" />
             </div>
             <div className="min-w-0">
-              <span className="block text-[10px] font-extrabold text-emerald-400 uppercase tracking-widest">Active Member</span>
+              <span className="block text-[10px] font-extrabold text-emerald-400 uppercase tracking-widest">{t('activeMember')}</span>
               <span className="block text-sm text-white truncate font-bold mt-0.5">{userEmail}</span>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-y-4 gap-x-6 text-xs">
             <div>
-              <span className="block text-slate-500 font-extrabold uppercase tracking-widest text-[9px]">Goal</span>
+              <span className="block text-slate-500 font-extrabold uppercase tracking-widest text-[9px]">{t('goal')}</span>
               <span className="block text-white font-bold mt-1 text-[13px]">
                 {tOnboarding(`goals.${initialProfile.goal}`)}
               </span>
             </div>
             <div>
-              <span className="block text-slate-500 font-extrabold uppercase tracking-widest text-[9px]">Metrics</span>
+              <span className="block text-slate-500 font-extrabold uppercase tracking-widest text-[9px]">{t('metrics')}</span>
               <span className="block text-white font-bold mt-1 text-[13px]">
                 {initialProfile.weight}kg / {initialProfile.height}cm
               </span>
             </div>
             <div>
-              <span className="block text-slate-500 font-extrabold uppercase tracking-widest text-[9px]">Schedule</span>
+              <span className="block text-slate-500 font-extrabold uppercase tracking-widest text-[9px]">{t('schedule')}</span>
               <span className="block text-white font-bold mt-1 text-[13px]">
                 {initialProfile.training_days} {tOnboarding('schedule.days_unit')}
               </span>
             </div>
             <div>
-              <span className="block text-slate-500 font-extrabold uppercase tracking-widest text-[9px]">Diet preference</span>
+              <span className="block text-slate-500 font-extrabold uppercase tracking-widest text-[9px]">{t('dietPreference')}</span>
               <span className="block text-white font-bold mt-1 text-[13px] truncate">
                 {tOnboarding(`nutrition.${initialProfile.diet_preference}`).split(' (')[0]}
               </span>
@@ -312,7 +312,7 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
             <Loader2 className="h-9 w-9 animate-spin text-emerald-400 mb-4" />
             <h2 className="text-xl font-bold text-white mb-2">{t('generating')}</h2>
             <p className="text-xs text-slate-400 text-center max-w-sm">
-              Please wait while Gemini creates your customized fitness program. This takes about 10-15 seconds.
+              {t('generatingDesc')}
             </p>
           </div>
         )}
@@ -324,7 +324,7 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
               <Dumbbell className="h-8 w-8 animate-bounce" />
             </div>
             <div className="space-y-2">
-              <h2 className="text-xl font-extrabold text-white">No Active Plan</h2>
+              <h2 className="text-xl font-extrabold text-white">{t('noActivePlanTitle')}</h2>
               <p className="text-sm text-slate-400 max-w-sm mx-auto">{t('noActivePlan')}</p>
             </div>
             <Button
