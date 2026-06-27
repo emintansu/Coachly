@@ -58,7 +58,7 @@ export default async function LocaleLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} min-h-full flex flex-col bg-[#09090e] text-slate-100 antialiased selection:bg-emerald-500/25 selection:text-emerald-200`}
       >
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider locale={locale} messages={messages}>
           <QueryProvider>
             <div className="relative min-h-screen flex flex-col overflow-hidden">
               {/* Glowing background effects */}
