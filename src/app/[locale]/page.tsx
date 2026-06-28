@@ -1,6 +1,8 @@
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import Navbar from '@/components/Navbar';
+import { createClient } from '@/lib/supabase/server';
+import { redirect } from 'next/navigation';
 import { 
   Sparkles, 
   Dumbbell, 
@@ -11,9 +13,21 @@ import {
   CheckCircle2 
 } from 'lucide-react';
 
-export default function LandingPage() {
+export default async function LandingPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
   const t = useTranslations('Landing');
   const tCommon = useTranslations('Common');
+
+  const { locale } = await params;
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (user) {
+    redirect(`/${locale}/dashboard`);
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
