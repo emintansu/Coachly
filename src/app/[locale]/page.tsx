@@ -1,16 +1,16 @@
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import Navbar from '@/components/Navbar';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import { 
-  Sparkles, 
-  Dumbbell, 
-  Apple, 
-  Flame, 
-  Target, 
-  Compass, 
-  CheckCircle2 
+import {
+  Sparkles,
+  Dumbbell,
+  Apple,
+  Flame,
+  Target,
+  Compass,
+  CheckCircle2
 } from 'lucide-react';
 
 export default async function LandingPage({
@@ -18,10 +18,9 @@ export default async function LandingPage({
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  const t = useTranslations('Landing');
-  const tCommon = useTranslations('Common');
-
   const { locale } = await params;
+  const t = await getTranslations('Landing');
+  const tCommon = await getTranslations('Common');
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -36,14 +35,14 @@ export default async function LandingPage({
       {/* Hero Section */}
       <section className="relative flex-1 flex flex-col justify-center px-4 pt-16 pb-20 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-          
+
           {/* Left Text Column */}
           <div className="lg:col-span-7 flex flex-col items-start text-left space-y-6">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-violet-500/30 bg-violet-500/5 text-violet-300 text-xs font-medium tracking-wide">
               <Sparkles className="h-3.5 w-3.5 text-violet-400 animate-pulse" />
               <span>Personalized AI Coaching Platform</span>
             </div>
-            
+
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
               {t('title').split('AI').map((part, idx) => (
                 idx === 1 ? (
@@ -54,11 +53,11 @@ export default async function LandingPage({
                 ) : part
               ))}
             </h1>
-            
+
             <p className="text-lg text-slate-400 max-w-2xl font-light leading-relaxed">
               {t('subtitle')}
             </p>
-            
+
             <div className="flex flex-wrap gap-4 pt-2 w-full sm:w-auto">
               <Link
                 id="landing-signup-btn"
@@ -67,7 +66,7 @@ export default async function LandingPage({
               >
                 {t('ctaStart')}
               </Link>
-              
+
               <Link
                 id="landing-login-btn"
                 href="/auth?mode=login"
@@ -98,7 +97,7 @@ export default async function LandingPage({
           <div className="lg:col-span-5 relative w-full flex justify-center items-center">
             {/* Glowing background circles for visual depth */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-emerald-500/10 rounded-full blur-[80px] pointer-events-none" />
-            
+
             {/* Mockup Glass Card */}
             <div className="relative w-full max-w-sm rounded-2xl border border-white/10 bg-[#12121a]/80 p-6 shadow-2xl shadow-black/40 backdrop-blur-sm">
               <div className="flex items-center justify-between border-b border-white/5 pb-4 mb-4">
@@ -108,7 +107,7 @@ export default async function LandingPage({
                 </div>
                 <span className="text-[11px] font-medium text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">TR & EN</span>
               </div>
-              
+
               <div className="space-y-4">
                 {/* Onboarding Summary Mock */}
                 <div className="bg-white/5 rounded-xl p-3 border border-white/5">
@@ -122,7 +121,7 @@ export default async function LandingPage({
                 {/* Day 1 Detail Mock */}
                 <div className="space-y-2">
                   <span className="text-xs font-bold text-slate-400">Pazartesi / Monday: Göğüs & Triceps</span>
-                  
+
                   <div className="space-y-2">
                     <div className="flex items-center justify-between p-2.5 rounded-lg bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all duration-300">
                       <div className="flex items-center gap-2">
