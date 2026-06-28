@@ -190,32 +190,32 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
               <User className="h-5 w-5" />
             </div>
             <div className="min-w-0">
-              <span className="block text-[10px] font-extrabold text-emerald-400 uppercase tracking-widest">{t('activeMember')}</span>
+              <span className="block text-xs font-extrabold text-emerald-400 uppercase tracking-widest">{t('activeMember')}</span>
               <span className="block text-sm text-white truncate font-bold mt-0.5">{userEmail}</span>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-y-4 gap-x-6 text-xs">
             <div>
-              <span className="block text-slate-500 font-extrabold uppercase tracking-widest text-[9px]">{t('goal')}</span>
+              <span className="block text-slate-500 font-extrabold uppercase tracking-widest text-[11px]">{t('goal')}</span>
               <span className="block text-white font-bold mt-1 text-[13px]">
                 {tOnboarding(`goals.${initialProfile.goal}`)}
               </span>
             </div>
             <div>
-              <span className="block text-slate-500 font-extrabold uppercase tracking-widest text-[9px]">{t('metrics')}</span>
+              <span className="block text-slate-500 font-extrabold uppercase tracking-widest text-[11px]">{t('metrics')}</span>
               <span className="block text-white font-bold mt-1 text-[13px]">
                 {initialProfile.weight}kg / {initialProfile.height}cm
               </span>
             </div>
             <div>
-              <span className="block text-slate-500 font-extrabold uppercase tracking-widest text-[9px]">{t('schedule')}</span>
+              <span className="block text-slate-500 font-extrabold uppercase tracking-widest text-[11px]">{t('schedule')}</span>
               <span className="block text-white font-bold mt-1 text-[13px]">
                 {initialProfile.training_days} {tOnboarding('schedule.days_unit')}
               </span>
             </div>
             <div>
-              <span className="block text-slate-500 font-extrabold uppercase tracking-widest text-[9px]">{t('dietPreference')}</span>
+              <span className="block text-slate-500 font-extrabold uppercase tracking-widest text-[11px]">{t('dietPreference')}</span>
               <span className="block text-white font-bold mt-1 text-[13px] truncate">
                 {tOnboarding(`nutrition.${initialProfile.diet_preference}`).split(' (')[0]}
               </span>
@@ -245,7 +245,7 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
 
         {/* Plans List History */}
         <div className="rounded-2xl border border-white/10 bg-[#12121a]/85 p-6 shadow-xl backdrop-blur-md space-y-4">
-          <h3 className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">
+          <h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest">
             {t('myPlans')}
           </h3>
 
@@ -348,7 +348,7 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
                   <Zap className="h-6 w-6 text-emerald-400" />
                 </div>
                 <div>
-                  <span className="text-[9px] font-extrabold text-slate-500 uppercase tracking-widest">{t('activePlan')}</span>
+                  <span className="text-[11px] font-extrabold text-slate-500 uppercase tracking-widest">{t('activePlan')}</span>
                   <h2 className="text-xl font-black text-white tracking-tight">{activePlan.name}</h2>
                 </div>
               </div>
@@ -421,7 +421,7 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
                         {currentDay?.day_name} - {currentDay?.focus}
                       </span>
                     </div>
-                    <span className="text-[10px] font-black text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full uppercase tracking-wider">
+                    <span className="text-xs font-black text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full uppercase tracking-wider">
                       {currentDay?.exercises.length} Exercises
                     </span>
                   </div>
@@ -460,19 +460,19 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
                         <div className="grid grid-cols-3 gap-3 relative z-10 max-w-sm">
                           {/* Sets */}
                           <div className="bg-emerald-500/5 border border-emerald-500/10 rounded-xl p-3 text-center flex flex-col justify-center min-h-[4.5rem]">
-                            <span className="block text-[8px] font-black uppercase tracking-widest text-emerald-400">Sets</span>
+                            <span className="block text-[10px] font-black uppercase tracking-widest text-emerald-400">Sets</span>
                             <span className="block text-base font-black text-white mt-1">{ex.sets}</span>
                           </div>
 
                           {/* Reps */}
                           <div className="bg-violet-500/5 border border-violet-500/10 rounded-xl p-3 text-center flex flex-col justify-center min-h-[4.5rem]">
-                            <span className="block text-[8px] font-black uppercase tracking-widest text-violet-400">Reps</span>
+                            <span className="block text-[10px] font-black uppercase tracking-widest text-violet-400">Reps</span>
                             <span className="block text-xs sm:text-sm font-black text-white mt-1 leading-tight break-words">{ex.reps_or_duration}</span>
                           </div>
 
                           {/* Rest */}
                           <div className="bg-teal-500/5 border border-teal-500/10 rounded-xl p-3 text-center flex flex-col justify-center min-h-[4.5rem]">
-                            <span className="block text-[8px] font-black uppercase tracking-widest text-teal-400">Rest</span>
+                            <span className="block text-[10px] font-black uppercase tracking-widest text-teal-400">Rest</span>
                             <span className="block text-base font-black text-white mt-1">{ex.rest_seconds}s</span>
                           </div>
                         </div>
@@ -500,7 +500,7 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
                   
                   {/* Breakfast */}
                   <div className="rounded-2xl border-l-4 border-l-emerald-500 border-y border-r border-white/10 bg-[#12121a]/85 p-5 shadow-xl space-y-2 backdrop-blur-md">
-                    <span className="block text-[10px] font-extrabold uppercase tracking-widest text-emerald-400">
+                    <span className="block text-xs font-extrabold uppercase tracking-widest text-emerald-400">
                       {t('nutritionMeals.breakfast')}
                     </span>
                     <p className="text-sm text-slate-200 leading-relaxed font-bold">
@@ -510,7 +510,7 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
 
                   {/* Lunch */}
                   <div className="rounded-2xl border-l-4 border-l-violet-500 border-y border-r border-white/10 bg-[#12121a]/85 p-5 shadow-xl space-y-2 backdrop-blur-md">
-                    <span className="block text-[10px] font-extrabold uppercase tracking-widest text-violet-400">
+                    <span className="block text-xs font-extrabold uppercase tracking-widest text-violet-400">
                       {t('nutritionMeals.lunch')}
                     </span>
                     <p className="text-sm text-slate-200 leading-relaxed font-bold">
@@ -520,7 +520,7 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
 
                   {/* Dinner */}
                   <div className="rounded-2xl border-l-4 border-l-teal-500 border-y border-r border-white/10 bg-[#12121a]/85 p-5 shadow-xl space-y-2 backdrop-blur-md">
-                    <span className="block text-[10px] font-extrabold uppercase tracking-widest text-teal-400">
+                    <span className="block text-xs font-extrabold uppercase tracking-widest text-teal-400">
                       {t('nutritionMeals.dinner')}
                     </span>
                     <p className="text-sm text-slate-200 leading-relaxed font-bold">
@@ -531,7 +531,7 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
                   {/* Snacks */}
                   {activePlan.plan_data.nutrition_plan.daily_meal_template.snacks && (
                     <div className="rounded-2xl border-l-4 border-l-amber-500 border-y border-r border-white/10 bg-[#12121a]/85 p-5 shadow-xl space-y-2 backdrop-blur-md">
-                      <span className="block text-[10px] font-extrabold uppercase tracking-widest text-amber-400">
+                      <span className="block text-xs font-extrabold uppercase tracking-widest text-amber-400">
                         {t('nutritionMeals.snacks')}
                       </span>
                       <p className="text-sm text-slate-200 leading-relaxed font-bold">
@@ -553,46 +553,46 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
                     <div className="grid grid-cols-2 gap-4">
                       {/* Calories */}
                       <div className="p-4 rounded-xl bg-white/5 border border-white/5 text-center">
-                        <span className="block text-[9px] font-black text-slate-500 uppercase tracking-wider">
+                        <span className="block text-[11px] font-black text-slate-500 uppercase tracking-wider">
                           {t('calories')}
                         </span>
                         <span className="block text-2xl font-black text-white mt-1">
                           {activePlan.plan_data.nutrition_plan.target_calories_kcal}
                         </span>
-                        <span className="text-[9px] text-slate-500 font-bold">kcal</span>
+                        <span className="text-[11px] text-slate-500 font-bold">kcal</span>
                       </div>
 
                       {/* Protein */}
                       <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/10 text-center">
-                        <span className="block text-[9px] font-black text-emerald-400 uppercase tracking-wider">
+                        <span className="block text-[11px] font-black text-emerald-400 uppercase tracking-wider">
                           {t('protein')}
                         </span>
                         <span className="block text-2xl font-black text-emerald-300 mt-1">
                           {activePlan.plan_data.nutrition_plan.target_protein_g}
                         </span>
-                        <span className="text-[9px] text-emerald-500 font-bold">g</span>
+                        <span className="text-[11px] text-emerald-500 font-bold">g</span>
                       </div>
 
                       {/* Carbs */}
                       <div className="p-4 rounded-xl bg-violet-500/5 border border-violet-500/10 text-center">
-                        <span className="block text-[9px] font-black text-violet-400 uppercase tracking-wider">
+                        <span className="block text-[11px] font-black text-violet-400 uppercase tracking-wider">
                           {t('carbs')}
                         </span>
                         <span className="block text-2xl font-black text-violet-300 mt-1">
                           {activePlan.plan_data.nutrition_plan.target_carbs_g}
                         </span>
-                        <span className="text-[9px] text-violet-500 font-bold">g</span>
+                        <span className="text-[11px] text-violet-500 font-bold">g</span>
                       </div>
 
                       {/* Fat */}
                       <div className="p-4 rounded-xl bg-teal-500/5 border border-teal-500/10 text-center">
-                        <span className="block text-[9px] font-black text-teal-400 uppercase tracking-wider">
+                        <span className="block text-[11px] font-black text-teal-400 uppercase tracking-wider">
                           {t('fat')}
                         </span>
                         <span className="block text-2xl font-black text-teal-300 mt-1">
                           {activePlan.plan_data.nutrition_plan.target_fat_g}
                         </span>
-                        <span className="text-[9px] text-teal-500 font-bold">g</span>
+                        <span className="text-[11px] text-teal-500 font-bold">g</span>
                       </div>
                     </div>
                   </div>
