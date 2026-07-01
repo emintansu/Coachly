@@ -460,19 +460,19 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
                         <div className="grid grid-cols-3 gap-3 relative z-10 max-w-sm">
                           {/* Sets */}
                           <div className="bg-emerald-500/5 border border-emerald-500/10 rounded-xl p-3 text-center flex flex-col justify-center min-h-[4.5rem]">
-                            <span className="block text-[10px] font-black uppercase tracking-widest text-emerald-400">Sets</span>
+                            <span className="block text-[10px] font-black uppercase tracking-widest text-emerald-400">{t('setsShort')}</span>
                             <span className="block text-base font-black text-white mt-1">{ex.sets}</span>
                           </div>
 
                           {/* Reps */}
                           <div className="bg-violet-500/5 border border-violet-500/10 rounded-xl p-3 text-center flex flex-col justify-center min-h-[4.5rem]">
-                            <span className="block text-[10px] font-black uppercase tracking-widest text-violet-400">Reps</span>
+                            <span className="block text-[10px] font-black uppercase tracking-widest text-violet-400">{t('repsShort')}</span>
                             <span className="block text-xs sm:text-sm font-black text-white mt-1 leading-tight break-words">{ex.reps_or_duration}</span>
                           </div>
 
                           {/* Rest */}
                           <div className="bg-teal-500/5 border border-teal-500/10 rounded-xl p-3 text-center flex flex-col justify-center min-h-[4.5rem]">
-                            <span className="block text-[10px] font-black uppercase tracking-widest text-teal-400">Rest</span>
+                            <span className="block text-[10px] font-black uppercase tracking-widest text-teal-400">{t('restShort')}</span>
                             <span className="block text-base font-black text-white mt-1">{ex.rest_seconds}s</span>
                           </div>
                         </div>

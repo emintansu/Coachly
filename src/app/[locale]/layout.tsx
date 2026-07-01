@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
+import { getMessages, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import QueryProvider from '@/components/QueryProvider';
@@ -24,13 +24,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   
-  const title = locale === "tr" 
-    ? "Coachly - Yapay Zeka Destekli Kişisel Antrenman Koçu" 
-    : "Coachly - AI Personal Workout Coach";
+  const t = await getTranslations({ locale, namespace: 'Common' });
+  
+  const title = t('metadataTitle');
     
-  const description = locale === "tr"
-    ? "Yapay zeka tarafından size özel hazırlanan dinamik haftalık planlarla antrenman ve beslenme hedeflerinize ulaşın."
-    : "Reach your training and nutrition goals with dynamic weekly plans tailored by AI.";
+  const description = t('metadataDesc');
 
   return {
     title,

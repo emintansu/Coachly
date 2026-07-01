@@ -118,8 +118,8 @@ export default function OnboardingPage() {
       
       router.push('/dashboard');
     } catch (err) {
-      console.error('Error saving profile:', err);
-      alert(locale === 'tr' ? 'Profil kaydedilirken hata oluştu.' : 'Error saving profile.');
+      console.error(err);
+      alert(t('saveError'));
     } finally {
       setSaving(false);
     }
@@ -277,14 +277,14 @@ export default function OnboardingPage() {
                   exit="exit"
                   className="space-y-6"
                 >
-                  <div className="space-y-1">
-                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-                      {locale === 'tr' ? 'Yaşınız Kaç?' : 'How Old Are You?'}
-                    </h2>
-                    <p className="text-xs text-slate-400">
-                      {locale === 'tr' ? 'Bize kaç yaşında olduğunuzu yazın.' : 'Tell us your current age.'}
-                    </p>
-                  </div>
+                  <div className="space-y-4">
+                      <h3 className="text-xl font-bold text-white">
+                        {t('metrics.age_question')}
+                      </h3>
+                      <p className="text-slate-400 text-sm">
+                        {t('metrics.age_desc')}
+                      </p>
+                    </div>
 
                   <div className="flex flex-col items-center py-6">
                     <div className="relative max-w-[200px] w-full text-center">
@@ -313,14 +313,14 @@ export default function OnboardingPage() {
                   exit="exit"
                   className="space-y-6"
                 >
-                  <div className="space-y-1">
-                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-                      {locale === 'tr' ? 'Boyunuz Kaç?' : 'How Tall Are You?'}
-                    </h2>
-                    <p className="text-xs text-slate-400">
-                      {locale === 'tr' ? 'Santimetre (cm) cinsinden yazın.' : 'Enter your height in centimeters.'}
-                    </p>
-                  </div>
+                  <div className="space-y-4">
+                      <h3 className="text-xl font-bold text-white">
+                        {t('metrics.height_question')}
+                      </h3>
+                      <p className="text-slate-400 text-sm">
+                        {t('metrics.height_desc')}
+                      </p>
+                    </div>
 
                   <div className="flex flex-col items-center py-6">
                     <div className="relative max-w-[200px] w-full text-center flex items-end justify-center">
@@ -350,14 +350,14 @@ export default function OnboardingPage() {
                   exit="exit"
                   className="space-y-6"
                 >
-                  <div className="space-y-1">
-                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-                      {locale === 'tr' ? 'Kilonuz Kaç?' : 'How Much Do You Weigh?'}
-                    </h2>
-                    <p className="text-xs text-slate-400">
-                      {locale === 'tr' ? 'Kilogram (kg) cinsinden yazın.' : 'Enter your weight in kilograms.'}
-                    </p>
-                  </div>
+                  <div className="space-y-4">
+                      <h3 className="text-xl font-bold text-white">
+                        {t('metrics.weight_question')}
+                      </h3>
+                      <p className="text-slate-400 text-sm">
+                        {t('metrics.weight_desc')}
+                      </p>
+                    </div>
 
                   <div className="flex flex-col items-center py-6">
                     <div className="relative max-w-[200px] w-full text-center flex items-end justify-center">
@@ -387,14 +387,12 @@ export default function OnboardingPage() {
                   exit="exit"
                   className="space-y-6"
                 >
-                  <div className="space-y-1">
-                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-                      {t('metrics.activity')}
-                    </h2>
-                    <p className="text-xs text-slate-400">
-                      {locale === 'tr' ? 'Günlük hareketlilik seviyenizi seçin.' : 'Select your daily mobility level.'}
-                    </p>
-                  </div>
+                  <div className="space-y-4">
+                      <h3 className="text-xl font-bold text-white">{t('metrics.activity')}</h3>
+                      <p className="text-slate-400 text-sm">
+                        {t('metrics.activity_question')}
+                      </p>
+                    </div>
 
                   <div className="grid grid-cols-1 gap-3">
                     {['sedentary', 'lightly_active', 'moderately_active', 'very_active'].map((level) => (
@@ -425,14 +423,11 @@ export default function OnboardingPage() {
                   exit="exit"
                   className="space-y-6"
                 >
-                  <div className="space-y-1">
-                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-                      {t('schedule.days')}
-                    </h2>
-                    <p className="text-xs text-slate-400">
-                      {locale === 'tr' ? 'Haftada kaç gün antrenman yapmak istersiniz?' : 'How many days do you want to train per week?'}
-                    </p>
-                  </div>
+                  <div className="space-y-4">
+                      <h3 className="text-xl font-bold text-white">
+                        {t('schedule.days_question')}
+                      </h3>
+                    </div>
 
                   <div className="flex justify-center py-6">
                     <div className="flex flex-wrap justify-center gap-3 max-w-[340px]">
@@ -465,14 +460,11 @@ export default function OnboardingPage() {
                   exit="exit"
                   className="space-y-6"
                 >
-                  <div className="space-y-1">
-                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-                      {t('schedule.equipment')}
-                    </h2>
-                    <p className="text-xs text-slate-400">
-                      {locale === 'tr' ? 'Çalışırken hangi araçlara erişiminiz var?' : 'Which equipment do you have access to?'}
-                    </p>
-                  </div>
+                  <div className="space-y-4 pt-6 border-t border-white/5">
+                      <h3 className="text-xl font-bold text-white">
+                        {t('schedule.equipment_question')}
+                      </h3>
+                    </div>
 
                   <div className="grid grid-cols-1 gap-3.5">
                     {['none', 'dumbbells', 'full_gym'].map((eq) => (
@@ -503,14 +495,12 @@ export default function OnboardingPage() {
                   exit="exit"
                   className="space-y-6"
                 >
-                  <div className="space-y-1">
-                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-                      {t('nutrition.title')}
-                    </h2>
-                    <p className="text-xs text-slate-400">
-                      {t('nutrition.diet')}
-                    </p>
-                  </div>
+                  <div className="space-y-4">
+                      <h3 className="text-xl font-bold text-white">{t('nutrition.title')}</h3>
+                      <p className="text-slate-400 text-sm">
+                        {t('nutrition.diet_question')}
+                      </p>
+                    </div>
 
                   <div className="grid grid-cols-1 gap-3">
                     {['standard', 'vegetarian', 'vegan', 'keto', 'high_protein'].map((diet) => (
@@ -531,7 +521,7 @@ export default function OnboardingPage() {
 
                   {errors.diet_preference && (
                     <p className="text-xs text-red-400 text-center mt-2">
-                      {locale === 'tr' ? 'Lütfen bir diyet tercihi seçin.' : 'Please select a diet preference.'}
+                      {t('nutrition.diet_error')}
                     </p>
                   )}
                 </motion.div>

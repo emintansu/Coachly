@@ -40,7 +40,7 @@ export default async function LandingPage({
           <div className="lg:col-span-7 flex flex-col items-start text-left space-y-6">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-violet-500/30 bg-violet-500/5 text-violet-300 text-xs font-medium tracking-wide">
               <Sparkles className="h-3.5 w-3.5 text-violet-400 animate-pulse" />
-              <span>Personalized AI Coaching Platform</span>
+              <span>{t('badgeAi')}</span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
@@ -79,16 +79,16 @@ export default async function LandingPage({
             {/* Quick Metrics Badges */}
             <div className="grid grid-cols-3 gap-6 pt-8 w-full border-t border-white/5">
               <div>
-                <span className="block text-2xl font-bold text-white tracking-tight">100%</span>
-                <span className="text-xs text-slate-500 font-medium uppercase tracking-wider">Kişiye Özel / Custom</span>
+                <span className="block text-2xl font-bold text-white tracking-tight">{t('statCustomSub')}</span>
+                <span className="text-xs text-slate-500 font-medium uppercase tracking-wider">{t('statCustom')}</span>
               </div>
               <div>
-                <span className="block text-2xl font-bold text-emerald-400 tracking-tight">Flash</span>
-                <span className="text-xs text-slate-500 font-medium uppercase tracking-wider">Hızlı AI / Gemini AI</span>
+                <span className="block text-2xl font-bold text-emerald-400 tracking-tight">{t('statAiSub')}</span>
+                <span className="text-xs text-slate-500 font-medium uppercase tracking-wider">{t('statAi')}</span>
               </div>
               <div>
-                <span className="block text-2xl font-bold text-white tracking-tight">2 Dilli</span>
-                <span className="text-xs text-slate-500 font-medium uppercase tracking-wider">TR / EN Desteği</span>
+                <span className="block text-2xl font-bold text-white tracking-tight">{t('statBilingual')}</span>
+                <span className="text-xs text-slate-500 font-medium uppercase tracking-wider">{t('statBilingualSub')}</span>
               </div>
             </div>
           </div>
@@ -103,40 +103,40 @@ export default async function LandingPage({
               <div className="flex items-center justify-between border-b border-white/5 pb-4 mb-4">
                 <div className="flex items-center gap-2">
                   <div className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
-                  <span className="text-xs text-slate-400 font-semibold tracking-wide uppercase">AI Active Plan</span>
+                  <span className="text-xs text-slate-400 font-semibold tracking-wide uppercase">{t('mockupTitle')}</span>
                 </div>
-                <span className="text-[11px] font-medium text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">TR & EN</span>
+                <span className="text-[11px] font-medium text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">{t('mockupLang')}</span>
               </div>
 
               <div className="space-y-4">
                 {/* Onboarding Summary Mock */}
                 <div className="bg-white/5 rounded-xl p-3 border border-white/5">
-                  <span className="block text-[10px] text-slate-500 font-bold uppercase tracking-wider">Onboarding Profile</span>
+                  <span className="block text-[10px] text-slate-500 font-bold uppercase tracking-wider">{t('mockupSection1')}</span>
                   <div className="flex justify-between items-center mt-1">
-                    <span className="text-xs font-semibold text-white">Kas Yapma / Gain Muscle</span>
-                    <span className="text-xs text-slate-300">4 Gün / 4 Days</span>
+                    <span className="text-xs font-semibold text-white">{t('mockupGoal')}</span>
+                    <span className="text-xs text-slate-300">{t('mockupDays')}</span>
                   </div>
                 </div>
 
                 {/* Day 1 Detail Mock */}
                 <div className="space-y-2">
-                  <span className="text-xs font-bold text-slate-400">Pazartesi / Monday: Göğüs & Triceps</span>
+                  <span className="text-xs font-bold text-slate-400">{t('mockupDayTitle')}</span>
 
                   <div className="space-y-2">
                     <div className="flex items-center justify-between p-2.5 rounded-lg bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all duration-300">
                       <div className="flex items-center gap-2">
                         <Dumbbell className="h-3.5 w-3.5 text-emerald-400" />
-                        <span className="text-xs font-medium text-white">Bench Press</span>
+                        <span className="text-xs font-medium text-white">{t('mockupExercise1')}</span>
                       </div>
-                      <span className="text-xs text-slate-400">4 Set x 10 Reps</span>
+                      <span className="text-xs text-slate-400">{t('mockupSets1')}</span>
                     </div>
 
                     <div className="flex items-center justify-between p-2.5 rounded-lg bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all duration-300">
                       <div className="flex items-center gap-2">
                         <Dumbbell className="h-3.5 w-3.5 text-emerald-400" />
-                        <span className="text-xs font-medium text-white">Dumbbell Flyes</span>
+                        <span className="text-xs font-medium text-white">{t('mockupExercise2')}</span>
                       </div>
-                      <span className="text-xs text-slate-400">3 Set x 12 Reps</span>
+                      <span className="text-xs text-slate-400">{t('mockupSets2')}</span>
                     </div>
                   </div>
                 </div>
@@ -148,9 +148,9 @@ export default async function LandingPage({
                       <Apple className="h-3.5 w-3.5" />
                     </div>
                     <div>
-                      <span className="block text-xs font-bold text-white">Beslenme / Nutrition Tip</span>
+                      <span className="block text-xs font-bold text-white">{t('mockupNutritionTitle')}</span>
                       <p className="text-[11px] text-slate-400 leading-normal mt-0.5">
-                        Yüksek proteinli kahvaltı şablonu (Yumurta, Yulaf ezmesi, Lor peyniri).
+                        {t('mockupNutritionDesc')}
                       </p>
                     </div>
                   </div>
