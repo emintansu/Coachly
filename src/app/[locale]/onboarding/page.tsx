@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from '@/i18n/routing';
 import { createClient } from '@/lib/supabase/client';
@@ -19,18 +19,18 @@ import {
   ChevronLast
 } from 'lucide-react';
 
-const onboardingSchema = z.object({
+const onboardingBaseSchema = z.object({
   goal: z.enum(['lose_weight', 'gain_muscle', 'maintain']),
-  height: z.coerce.number().min(100, 'Height must be at least 100 cm').max(250, 'Height must be below 250 cm'),
-  weight: z.coerce.number().min(30, 'Weight must be at least 30 kg').max(300, 'Weight must be below 300 kg'),
-  age: z.coerce.number().min(10, 'Age must be at least 10').max(100, 'Age must be below 100'),
+  height: z.coerce.number(),
+  weight: z.coerce.number(),
+  age: z.coerce.number(),
   activity_level: z.enum(['sedentary', 'lightly_active', 'moderately_active', 'very_active']),
-  training_days: z.coerce.number().min(1).max(7),
+  training_days: z.coerce.number(),
   equipment: z.enum(['none', 'dumbbells', 'full_gym']),
   diet_preference: z.enum(['standard', 'vegetarian', 'vegan', 'keto', 'high_protein']),
 });
 
-type OnboardingValues = z.infer<typeof onboardingSchema>;
+type OnboardingValues = z.infer<typeof onboardingBaseSchema>;
 
 export default function OnboardingPage() {
   const t = useTranslations('Onboarding');
@@ -41,6 +41,25 @@ export default function OnboardingPage() {
   const [saving, setSaving] = useState(false);
   const supabase = createClient();
   const totalSteps = 8;
+
+  const onboardingSchema = useMemo(() => {
+    return z.object({
+      goal: z.enum(['lose_weight', 'gain_muscle', 'maintain']),
+      height: z.coerce.number()
+        .min(100, t('validation.heightMin'))
+        .max(250, t('validation.heightMax')),
+      weight: z.coerce.number()
+        .min(30, t('validation.weightMin'))
+        .max(300, t('validation.weightMax')),
+      age: z.coerce.number()
+        .min(15, t('validation.ageMin'))
+        .max(100, t('validation.ageMax')),
+      activity_level: z.enum(['sedentary', 'lightly_active', 'moderately_active', 'very_active']),
+      training_days: z.coerce.number().min(1).max(7),
+      equipment: z.enum(['none', 'dumbbells', 'full_gym']),
+      diet_preference: z.enum(['standard', 'vegetarian', 'vegan', 'keto', 'high_protein']),
+    });
+  }, [t]);
 
   const {
     register,

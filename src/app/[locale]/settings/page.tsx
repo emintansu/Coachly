@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from '@/i18n/routing';
 import { createClient } from '@/lib/supabase/client';
@@ -21,18 +21,18 @@ import {
   AlertCircle
 } from 'lucide-react';
 
-const profileSchema = z.object({
+const profileBaseSchema = z.object({
   goal: z.enum(['lose_weight', 'gain_muscle', 'maintain']),
-  height: z.coerce.number().min(100).max(250),
-  weight: z.coerce.number().min(30).max(300),
-  age: z.coerce.number().min(10).max(100),
+  height: z.coerce.number(),
+  weight: z.coerce.number(),
+  age: z.coerce.number(),
   activity_level: z.enum(['sedentary', 'lightly_active', 'moderately_active', 'very_active']),
   training_days: z.coerce.number().min(1).max(7),
   equipment: z.enum(['none', 'dumbbells', 'full_gym']),
   diet_preference: z.enum(['standard', 'vegetarian', 'vegan', 'keto', 'high_protein']),
 });
 
-type ProfileValues = z.infer<typeof profileSchema>;
+type ProfileValues = z.infer<typeof profileBaseSchema>;
 
 export default function SettingsPage() {
   const t = useTranslations('Onboarding');
@@ -46,6 +46,25 @@ export default function SettingsPage() {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   
   const supabase = createClient();
+
+  const profileSchema = useMemo(() => {
+    return z.object({
+      goal: z.enum(['lose_weight', 'gain_muscle', 'maintain']),
+      height: z.coerce.number()
+        .min(100, t('validation.heightMin'))
+        .max(250, t('validation.heightMax')),
+      weight: z.coerce.number()
+        .min(30, t('validation.weightMin'))
+        .max(300, t('validation.weightMax')),
+      age: z.coerce.number()
+        .min(15, t('validation.ageMin'))
+        .max(100, t('validation.ageMax')),
+      activity_level: z.enum(['sedentary', 'lightly_active', 'moderately_active', 'very_active']),
+      training_days: z.coerce.number().min(1).max(7),
+      equipment: z.enum(['none', 'dumbbells', 'full_gym']),
+      diet_preference: z.enum(['standard', 'vegetarian', 'vegan', 'keto', 'high_protein']),
+    });
+  }, [t]);
 
   const {
     register,
@@ -223,6 +242,9 @@ export default function SettingsPage() {
                     {...register('age')}
                     className="w-full h-10 px-3 rounded-lg border border-white/10 bg-white/5 text-slate-100 text-xs focus:outline-none focus:border-emerald-500/50"
                   />
+                  {errors.age && (
+                    <p className="text-[10px] text-red-400 font-semibold leading-tight mt-1">{errors.age.message}</p>
+                  )}
                 </div>
                 <div className="space-y-1">
                   <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{t('metrics.height')}</label>
@@ -231,6 +253,9 @@ export default function SettingsPage() {
                     {...register('height')}
                     className="w-full h-10 px-3 rounded-lg border border-white/10 bg-white/5 text-slate-100 text-xs focus:outline-none focus:border-emerald-500/50"
                   />
+                  {errors.height && (
+                    <p className="text-[10px] text-red-400 font-semibold leading-tight mt-1">{errors.height.message}</p>
+                  )}
                 </div>
                 <div className="space-y-1">
                   <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{t('metrics.weight')}</label>
@@ -239,6 +264,9 @@ export default function SettingsPage() {
                     {...register('weight')}
                     className="w-full h-10 px-3 rounded-lg border border-white/10 bg-white/5 text-slate-100 text-xs focus:outline-none focus:border-emerald-500/50"
                   />
+                  {errors.weight && (
+                    <p className="text-[10px] text-red-400 font-semibold leading-tight mt-1">{errors.weight.message}</p>
+                  )}
                 </div>
               </div>
 

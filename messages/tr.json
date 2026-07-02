@@ -134,6 +134,14 @@
       "vegan": "Vegan",
       "keto": "Keto / Düşük Karbonhidrat",
       "high_protein": "Yüksek Protein"
+    },
+    "validation": {
+      "ageMin": "Yaş en az 15 olmalıdır",
+      "ageMax": "Yaş 100'den küçük olmalıdır",
+      "heightMin": "Boy en az 100 cm olmalıdır",
+      "heightMax": "Boy 250 cm'den küçük olmalıdır",
+      "weightMin": "Kilo en az 30 kg olmalıdır",
+      "weightMax": "Kilo 300 kg'dan küçük olmalıdır"
     }
   },
   "Settings": {
@@ -180,6 +188,8 @@
     "carbs": "Karbonhidrat",
     "fat": "Yağ",
     "calories": "Kalori",
-    "generalTips": "Beslenme İpuçları"
+    "generalTips": "Beslenme İpuçları",
+    "medicalDisclaimerTitle": "Sağlık Uyarısı",
+    "medicalDisclaimerText": "Burada sunulan bilgiler yalnızca bilgilendirme ve eğitim amaçlıdır; tıbbi veya beslenme tavsiyesi niteliği taşımamaktadır. Herhangi bir diyet veya egzersiz programına başlamadan önce lütfen uzman bir hekime veya diyetisyene danışın."
   }
 }

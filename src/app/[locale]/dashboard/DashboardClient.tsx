@@ -612,6 +612,19 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
                     </ul>
                   </div>
 
+                  {/* Medical Disclaimer Card */}
+                  <div className="rounded-2xl border border-amber-500/25 bg-amber-500/5 p-5 shadow-xl space-y-2.5 backdrop-blur-md">
+                    <div className="flex items-center gap-2 text-amber-400">
+                      <AlertCircle className="h-4.5 w-4.5 shrink-0" />
+                      <span className="text-[10px] font-black uppercase tracking-widest">
+                        {t('medicalDisclaimerTitle')}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 leading-relaxed font-semibold">
+                      {t('medicalDisclaimerText')}
+                    </p>
+                  </div>
+
                 </div>
               </div>
             )}
