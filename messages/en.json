@@ -190,6 +190,10 @@
     "calories": "Calories",
     "generalTips": "Nutrition Tips",
     "medicalDisclaimerTitle": "Disclaimer",
-    "medicalDisclaimerText": "The information provided here is for educational and informational purposes only. It is not medical or nutritional advice. Please consult a qualified health professional or dietitian before starting any new diet or exercise program."
+    "medicalDisclaimerText": "The information provided here is for educational and informational purposes only. It is not medical or nutritional advice. Please consult a qualified health professional or dietitian before starting any new diet or exercise program.",
+    "errorTitle": "An Error Occurred",
+    "errorGeneration": "Plan generation failed. Please try again.",
+    "errorUpdate": "Failed to update exercise. Please try again.",
+    "errorDeletion": "Failed to delete workout plan. Please try again."
   }
 }

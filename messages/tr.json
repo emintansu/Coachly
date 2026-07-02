@@ -190,6 +190,10 @@
     "calories": "Kalori",
     "generalTips": "Beslenme İpuçları",
     "medicalDisclaimerTitle": "Sağlık Uyarısı",
-    "medicalDisclaimerText": "Burada sunulan bilgiler yalnızca bilgilendirme ve eğitim amaçlıdır; tıbbi veya beslenme tavsiyesi niteliği taşımamaktadır. Herhangi bir diyet veya egzersiz programına başlamadan önce lütfen uzman bir hekime veya diyetisyene danışın."
+    "medicalDisclaimerText": "Burada sunulan bilgiler yalnızca bilgilendirme ve eğitim amaçlıdır; tıbbi veya beslenme tavsiyesi niteliği taşımamaktadır. Herhangi bir diyet veya egzersiz programına başlamadan önce lütfen uzman bir hekime veya diyetisyene danışın.",
+    "errorTitle": "Bir Hata Oluştu",
+    "errorGeneration": "Plan oluşturulurken hata oluştu. Lütfen tekrar deneyin.",
+    "errorUpdate": "Egzersiz güncellenirken hata oluştu. Lütfen tekrar deneyin.",
+    "errorDeletion": "Antrenman planı silinirken hata oluştu. Lütfen tekrar deneyin."
   }
 }

@@ -67,6 +67,7 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
   
   // Modal states
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [editingExercise, setEditingExercise] = useState<{
     dayIdx: number;
     exerciseIdx: number;
@@ -97,6 +98,7 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
   // AI Plan Generation Mutation
   const generateMutation = useMutation({
     mutationFn: async () => {
+      setErrorMessage(null);
       const result = await generateWorkoutPlan(locale);
       if (!result.success) {
         throw new Error(result.error);
@@ -111,13 +113,15 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
       }
     },
     onError: (err: any) => {
-      alert(err.message || 'Generation failed');
+      console.error(err);
+      setErrorMessage(t('errorGeneration'));
     }
   });
 
   // Edit Exercise Mutation
   const updatePlanMutation = useMutation({
     mutationFn: async (updatedPlanData: any) => {
+      setErrorMessage(null);
       const { error } = await supabase
         .from('workout_plans')
         .update({ plan_data: updatedPlanData })
@@ -129,13 +133,15 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
       setEditingExercise(null);
     },
     onError: (err: any) => {
-      alert(err.message || 'Update failed');
+      console.error(err);
+      setErrorMessage(t('errorUpdate'));
     }
   });
 
   // Delete Plan Mutation
   const deletePlanMutation = useMutation({
     mutationFn: async (planId: string) => {
+      setErrorMessage(null);
       const { error } = await supabase
         .from('workout_plans')
         .delete()
@@ -149,7 +155,8 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
       setSelectedDayIdx(0);
     },
     onError: (err: any) => {
-      alert(err.message || 'Deletion failed');
+      console.error(err);
+      setErrorMessage(t('errorDeletion'));
     }
   });
 
@@ -178,7 +185,26 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
-      <div className="flex-grow flex flex-col lg:flex-row w-full max-w-7xl mx-auto px-4 py-8 gap-8">
+      <div className="flex-grow w-full max-w-7xl mx-auto px-4 py-8 flex flex-col gap-6">
+
+        {/* Error message banner */}
+        {errorMessage && (
+          <div className="flex items-start gap-2.5 p-4 rounded-xl border border-red-500/30 bg-red-500/5 text-red-200 text-xs">
+            <AlertCircle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
+            <div className="flex-grow">
+              <span className="font-bold block mb-0.5">{t('errorTitle')}</span>
+              <span>{errorMessage}</span>
+            </div>
+            <button
+              onClick={() => setErrorMessage(null)}
+              className="text-slate-500 hover:text-white transition-colors font-bold text-xs px-1"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
+        <div className="flex flex-col lg:flex-row gap-8">
       
       {/* SIDEBAR */}
       <aside className="w-full lg:w-80 space-y-6 shrink-0">
@@ -811,6 +837,7 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
         )}
       </AnimatePresence>
 
+        </div>
       </div>
     </div>
   );

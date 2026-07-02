@@ -16,7 +16,8 @@ import {
   Flame, 
   Dumbbell, 
   Award,
-  ChevronLast
+  ChevronLast,
+  AlertCircle
 } from 'lucide-react';
 
 const onboardingBaseSchema = z.object({
@@ -39,6 +40,7 @@ export default function OnboardingPage() {
   const [step, setStep] = useState(1);
   const [loadingUser, setLoadingUser] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
   const totalSteps = 8;
 
@@ -114,11 +116,12 @@ export default function OnboardingPage() {
   const onSubmit = async (values: OnboardingValues) => {
     if (step < totalSteps) return;
     setSaving(true);
+    setError(null);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No active user');
 
-      const { error } = await supabase
+      const { error: updateError } = await supabase
         .from('profiles')
         .update({
           goal: values.goal,
@@ -133,12 +136,12 @@ export default function OnboardingPage() {
         })
         .eq('id', user.id);
 
-      if (error) throw error;
+      if (updateError) throw updateError;
       
       router.push('/dashboard');
     } catch (err) {
       console.error(err);
-      alert(t('saveError'));
+      setError(t('saveError'));
     } finally {
       setSaving(false);
     }
@@ -205,6 +208,21 @@ export default function OnboardingPage() {
 
         {/* Form Box */}
         <div className="w-full rounded-2xl border border-white/10 bg-[#12121a]/95 p-8 shadow-2xl backdrop-blur-md">
+          {error && (
+            <div className="flex items-start gap-2.5 p-4 mb-6 rounded-xl border border-red-500/30 bg-red-500/5 text-red-200 text-xs">
+              <AlertCircle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
+              <div className="flex-grow">
+                <span>{error}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setError(null)}
+                className="text-slate-500 hover:text-white transition-colors font-bold text-xs px-1"
+              >
+                ✕
+              </button>
+            </div>
+          )}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 min-h-[340px] flex flex-col justify-between">
             <AnimatePresence mode="wait">
               
