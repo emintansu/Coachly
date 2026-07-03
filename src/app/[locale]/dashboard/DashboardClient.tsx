@@ -6,6 +6,7 @@ import { useRouter } from '@/i18n/routing';
 import { createClient } from '@/lib/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { generateWorkoutPlan } from '@/app/actions/generatePlan';
+import { workoutPlanZodSchema } from '@/lib/schemas/workoutPlan';
 import { useCoachStore } from '@/store/useCoachStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -122,9 +123,15 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
   const updatePlanMutation = useMutation({
     mutationFn: async (updatedPlanData: any) => {
       setErrorMessage(null);
+      // Validate schema
+      const parseResult = workoutPlanZodSchema.safeParse(updatedPlanData);
+      if (!parseResult.success) {
+        console.error('Plan validation failed:', parseResult.error);
+        throw new Error('Invalid plan data structure');
+      }
       const { error } = await supabase
         .from('workout_plans')
-        .update({ plan_data: updatedPlanData })
+        .update({ plan_data: parseResult.data })
         .eq('id', activePlan.id);
       if (error) throw error;
     },

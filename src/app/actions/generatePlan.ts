@@ -2,40 +2,7 @@
 
 import { GoogleGenAI } from '@google/genai';
 import { createClient } from '@/lib/supabase/server';
-import { z } from 'zod';
-
-const workoutPlanZodSchema = z.object({
-  workout_days: z.array(
-    z.object({
-      day_name: z.string(),
-      focus: z.string(),
-      exercises: z.array(
-        z.object({
-          exercise_name: z.string(),
-          sets: z.number(),
-          reps_or_duration: z.string(),
-          rest_seconds: z.number(),
-          notes: z.string().optional(),
-        })
-      ),
-    })
-  ),
-  nutrition_plan: z.object({
-    daily_meal_template: z.object({
-      breakfast: z.string(),
-      lunch: z.string(),
-      dinner: z.string(),
-      snacks: z.string().optional(),
-    }),
-    target_calories_kcal: z.number(),
-    target_protein_g: z.number(),
-    target_carbs_g: z.number(),
-    target_fat_g: z.number(),
-    general_tips: z.array(z.string()),
-  }),
-});
-
-export type GeneratedPlanType = z.infer<typeof workoutPlanZodSchema>;
+import { workoutPlanZodSchema } from '@/lib/schemas/workoutPlan';
 
 export async function generateWorkoutPlan(locale: string) {
   try {
@@ -80,6 +47,21 @@ export async function generateWorkoutPlan(locale: string) {
     // 4. Construct prompt in the target language
     let prompt = '';
     if (locale === 'tr') {
+      const activityLevelMapTr: Record<string, string> = {
+        sedentary: 'Hareketsiz (Masa başı iş, spor yapmıyor)',
+        lightly_active: 'Hafif Aktif (Haftada 1-3 gün hafif spor/hareket)',
+        moderately_active: 'Orta Derece Aktif (Haftada 3-5 gün orta yoğunlukta spor)',
+        very_active: 'Çok Aktif (Haftada 6-7 gün ağır spor/fiziksel iş)',
+      };
+
+      const dietPreferenceMapTr: Record<string, string> = {
+        standard: 'Standart Beslenme (Her şeyi yer, kısıtlama yok)',
+        vegetarian: 'Vejetaryen (Et yemez, bitkisel & süt ürünleri ağırlıklı)',
+        vegan: 'Vegan (Hiçbir hayvansal gıda tüketmez)',
+        keto: 'Ketojenik / Düşük Karbonhidrat',
+        high_protein: 'Yüksek Proteinli Beslenme',
+      };
+
       prompt = `
         Sen profesyonel bir kişisel antrenör ve beslenme uzmanısın.
         Aşağıdaki bilgilere sahip bir kullanıcı için haftalık, uygulanabilir ve gerçekçi bir antrenman programı ile destekleyici örnek beslenme rehberi oluştur:
@@ -88,18 +70,34 @@ export async function generateWorkoutPlan(locale: string) {
         - YAŞ: ${age}
         - BOY: ${height} cm
         - KİLO: ${weight} kg
-        - AKTİVİTE SEVİYESİ: ${activity_level}
+        - AKTİVİTE SEVİYESİ: ${activityLevelMapTr[activity_level] || activity_level}
         - HAFTALIK ANTRENMAN GÜNÜ: ${training_days} gün
         - EKİPMAN DURUMU: ${equipment === 'none' ? 'Ekipman Yok (Sadece Vücut Ağırlığı)' : equipment === 'dumbbells' ? 'Sadece Dumbbell var' : 'Tam donanımlı spor salonu'}
-        - DİYET TERCİHİ: ${diet_preference}
+        - DİYET TERCİHİ: ${dietPreferenceMapTr[diet_preference] || diet_preference}
         
         KURALLAR:
-        1. Antrenman hareketlerini kesinlikle kullanıcının ekipman durumuna göre seç. Örneğin "Ekipman Yok" ise bench press, lat pulldown gibi hareketler önerme; şınav, squat, lunge gibi vücut ağırlığı hareketleri ver.
-        2. Plan ${training_days} adet antrenman gününü içersin. Dinlenme günlerini de dahil edebilirsin ama workout_days dizisinde tam olarak ${training_days} adet aktif çalışma günü olsun.
-        3. Egzersiz isimleri, öğün isimleri, açıklamalar ve ipuçları tamamen TÜRKÇE olsun.
-        4. Kalori ve makro besin değerlerini (protein, karbonhidrat, yağ) kullanıcının hedeflerine uygun gerçekçi sayılar olarak hesapla.
+        1. Egzersiz ve beslenme tavsiyelerini kullanıcının hedeflerine ve fiziksel durumuna göre kişiselleştir.
+        2. Antrenman hareketlerini kesinlikle kullanıcının ekipman durumuna göre seç. Örneğin "Ekipman Yok" ise bench press, lat pulldown gibi hareketler önerme; şınav, squat, lunge gibi vücut ağırlığı hareketleri ver.
+        3. Plan ${training_days} adet antrenman gününü içersin. Dinlenme günlerini de dahil edebilirsin ama workout_days dizisinde tam olarak ${training_days} adet aktif çalışma günü olsun.
+        4. Egzersiz isimleri, öğün isimleri, açıklamalar ve ipuçları tamamen TÜRKÇE olsun.
+        5. Kalori ve makro besin değerlerini (protein, karbonhidrat, yağ) kullanıcının hedeflerine uygun gerçekçi sayılar olarak hesapla.
       `;
     } else {
+      const activityLevelMapEn: Record<string, string> = {
+        sedentary: 'Sedentary (Little to no exercise, desk job)',
+        lightly_active: 'Lightly Active (Light exercise 1-3 days/week)',
+        moderately_active: 'Moderately Active (Moderate exercise 3-5 days/week)',
+        very_active: 'Very Active (Heavy exercise 6-7 days/week or physical job)',
+      };
+
+      const dietPreferenceMapEn: Record<string, string> = {
+        standard: 'Standard (Eats everything, no restrictions)',
+        vegetarian: 'Vegetarian (No meat, eats dairy and plants)',
+        vegan: 'Vegan (No animal products of any kind)',
+        keto: 'Ketogenic / Low Carb',
+        high_protein: 'High Protein',
+      };
+
       prompt = `
         You are a professional personal trainer and nutritionist.
         Create a weekly, actionable, and realistic workout program and supporting nutrition guide for a user with the following details:
@@ -108,16 +106,17 @@ export async function generateWorkoutPlan(locale: string) {
         - AGE: ${age}
         - HEIGHT: ${height} cm
         - WEIGHT: ${weight} kg
-        - ACTIVITY LEVEL: ${activity_level}
+        - ACTIVITY LEVEL: ${activityLevelMapEn[activity_level] || activity_level}
         - WEEKLY TRAINING DAYS: ${training_days} days
         - AVAILABLE EQUIPMENT: ${equipment === 'none' ? 'No Equipment (Bodyweight only)' : equipment === 'dumbbells' ? 'Dumbbells only' : 'Fully equipped gym'}
-        - DIET PREFERENCE: ${diet_preference}
+        - DIET PREFERENCE: ${dietPreferenceMapEn[diet_preference] || diet_preference}
         
         RULES:
-        1. Select exercises strictly based on the user's equipment. E.g. if "No Equipment", do not suggest bench press or lat pulldowns; suggest pushups, bodyweight squats, lunges, etc.
-        2. The plan must contain exactly ${training_days} active workout days in the workout_days array.
-        3. All exercise names, meal descriptions, and tips must be in ENGLISH.
-        4. Calculate realistic calories and macros (protein, carbs, fat) matching their goal.
+        1. Tailor exercises and diet guidelines specifically for the user's details and goal.
+        2. Select exercises strictly based on the user's equipment. E.g. if "No Equipment", do not suggest bench press or lat pulldowns; suggest pushups, bodyweight squats, lunges, etc.
+        3. The plan must contain exactly ${training_days} active workout days in the workout_days array.
+        4. All exercise names, meal descriptions, and tips must be in ENGLISH.
+        5. Calculate realistic calories and macros (protein, carbs, fat) matching their goal.
       `;
     }
 
@@ -230,7 +229,7 @@ export async function generateWorkoutPlan(locale: string) {
     console.error('Error generating workout plan:', err);
     return {
       success: false,
-      error: err.message || 'An error occurred during plan generation',
+      error: 'Failed to generate workout plan',
     };
   }
 }
