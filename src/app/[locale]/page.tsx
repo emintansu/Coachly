@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import {
@@ -203,15 +204,7 @@ export default async function LandingPage({
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/5 py-8 px-4 text-center text-slate-500 text-xs mt-auto">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span>&copy; {new Date().getFullYear()} Coachly. Tüm hakları saklıdır. / All rights reserved.</span>
-          <div className="flex gap-4">
-            <span className="hover:text-slate-300 cursor-pointer">Gizlilik Politikası</span>
-            <span className="hover:text-slate-300 cursor-pointer">Kullanım Koşulları</span>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

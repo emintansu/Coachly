@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Dumbbell, Mail, Lock, User, AlertCircle, Loader2, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // Define shape statically for TypeScript types
 const staticAuthSchema = z.object({
@@ -44,6 +45,38 @@ export default function AuthPage() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const supabase = createClient();
+
+  // Forgot password modal states
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetPending, setResetPending] = useState(false);
+  const [resetError, setResetError] = useState<string | null>(null);
+  const [resetSuccess, setResetSuccess] = useState<string | null>(null);
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setResetError(null);
+    setResetSuccess(null);
+    if (!resetEmail) {
+      setResetError(t('validation.emailInvalid'));
+      return;
+    }
+    setResetPending(true);
+    try {
+      const { error: resetErr } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: window.location.origin + `/${locale}/auth/callback?type=recovery`,
+      });
+      if (resetErr) {
+        setResetError(resetErr.message);
+      } else {
+        setResetSuccess(t('status.resetSuccess') || 'Password reset link sent! Check your inbox.');
+      }
+    } catch (err: any) {
+      setResetError(err.message || 'An error occurred');
+    } finally {
+      setResetPending(false);
+    }
+  };
 
   const {
     register,
@@ -212,6 +245,12 @@ export default function AuthPage() {
                     <button
                       id="auth-forgot-password-btn"
                       type="button"
+                      onClick={() => {
+                        setResetEmail('');
+                        setResetError(null);
+                        setResetSuccess(null);
+                        setIsResetModalOpen(true);
+                      }}
                       className="text-xs font-medium text-emerald-400 hover:text-emerald-300 transition-colors"
                     >
                       {t('forgotPassword')}
@@ -251,18 +290,100 @@ export default function AuthPage() {
               </Button>
             </form>
 
-            {/* Toggle form view link */}
-            <div className="mt-6 pt-6 border-t border-white/5 text-center">
+            {/* Toggle Mode */}
+            <div className="mt-6 text-center">
               <button
                 id="auth-toggle-mode-btn"
+                type="button"
                 onClick={toggleMode}
-                className="text-sm text-slate-400 hover:text-emerald-400 transition-colors duration-200"
+                className="text-xs text-slate-400 hover:text-white transition-colors"
               >
                 {isLogin ? t('noAccount') : t('hasAccount')}
               </button>
             </div>
           </div>
         </div>
+
+        {/* PASSWORD RESET MODAL */}
+        <AnimatePresence>
+          {isResetModalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setIsResetModalOpen(false)}
+                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              />
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                className="relative w-full max-w-sm rounded-2xl border border-white/10 bg-[#161622] p-6 shadow-2xl z-10 space-y-4"
+              >
+                <div className="flex items-center justify-between border-b border-white/5 pb-3">
+                  <h3 className="text-base font-bold text-white">
+                    {t('forgotPasswordTitle')}
+                  </h3>
+                  <button
+                    onClick={() => {
+                      setIsResetModalOpen(false);
+                      setResetError(null);
+                      setResetSuccess(null);
+                    }}
+                    className="text-slate-500 hover:text-white"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                {resetError && (
+                  <div className="flex items-start gap-2.5 p-3 rounded-lg border border-red-500/30 bg-red-500/5 text-red-200 text-xs">
+                    <AlertCircle className="h-4.5 w-4.5 text-red-400 shrink-0 mt-0.5" />
+                    <span>{resetError}</span>
+                  </div>
+                )}
+
+                {resetSuccess && (
+                  <div className="flex items-start gap-2.5 p-3 rounded-lg border border-emerald-500/30 bg-emerald-500/5 text-emerald-200 text-xs">
+                    <CheckCircle2 className="h-4.5 w-4.5 text-emerald-400 shrink-0 mt-0.5" />
+                    <span>{resetSuccess}</span>
+                  </div>
+                )}
+
+                <form onSubmit={handleResetPassword} className="space-y-4">
+                  <p className="text-xs text-slate-400 leading-relaxed font-semibold">
+                    {t('forgotPasswordDesc')}
+                  </p>
+                  <div className="space-y-1.5">
+                    <input
+                      type="email"
+                      required
+                      value={resetEmail}
+                      onChange={(e) => setResetEmail(e.target.value)}
+                      placeholder={t('emailPlaceholder')}
+                      className="w-full h-10 px-3.5 rounded-lg border border-white/10 bg-white/5 text-slate-100 text-xs focus:outline-none focus:border-emerald-500/50"
+                    />
+                  </div>
+
+                  <Button
+                    type="submit"
+                    disabled={resetPending}
+                    className="w-full h-10 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:brightness-110 text-white font-bold rounded-lg shadow-lg flex items-center justify-center gap-1.5 text-xs animate-pulse"
+                  >
+                    {resetPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      t('sendResetLink')
+                    )}
+                  </Button>
+                </form>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
       </div>
     </div>
   );

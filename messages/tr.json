@@ -11,6 +11,7 @@
     "delete": "Sil",
     "cancel": "İptal",
     "confirm": "Onayla",
+    "close": "Kapat",
     "loading": "Yükleniyor...",
     "language": "Dil",
     "turkish": "Türkçe",
@@ -53,7 +54,11 @@
     "interactiveDesc": "Planınızı dilediğiniz gibi güncelleyin, setleri/tekrarları kendinize göre ayarlayın.",
     "footerRights": "© {year} Coachly. Tüm hakları saklıdır.",
     "footerPrivacy": "Gizlilik Politikası",
-    "footerTerms": "Kullanım Koşulları"
+    "footerTerms": "Kullanım Koşulları",
+    "privacyTitle": "Gizlilik Politikası",
+    "privacyContent": "Coachly olarak gizliliğinize saygı duyuyor ve kişisel verilerinizi koruyoruz. Size özel bir haftalık plan oluşturabilmek amacıyla boy, kilo, yaş ve fitness hedefleri gibi bilgileri topluyoruz. Bu veriler güvenli bir şekilde saklanır ve Google Gemini AI aracılığıyla size özel diyet ve egzersiz programları oluşturmak için işlenir. Verilerinizi üçüncü şahıslarla paylaşmıyor veya satmıyoruz.",
+    "termsTitle": "Kullanım Koşulları",
+    "termsContent": "Coachly'yi kullanarak koşullarımızı kabul etmiş olursunuz. Hizmetimiz, yapay zeka tarafından oluşturulmuş fitness ve diyet önerileri sunmaktadır. Bu öneriler yalnızca eğitim ve bilgilendirme amaçlı olup, profesyonel tıbbi veya beslenme tavsiyesi teşkil etmez. Coachly'ye kaydolmak ve kullanmak için alt yaş sınırı 15'tir. Herhangi bir diyet veya egzersiz planına başlamadan önce her zaman bir hekime danışın."
   },
   "Auth": {
     "email": "E-posta",
@@ -67,6 +72,9 @@
     "emailPlaceholder": "you@example.com",
     "fullNamePlaceholder": "John Doe",
     "passwordPlaceholder": "••••••••",
+    "forgotPasswordTitle": "Şifreyi Sıfırla",
+    "forgotPasswordDesc": "Aşağıya e-posta adresinizi girin, şifrenizi sıfırlamanız için size bir kurtarma bağlantısı gönderelim.",
+    "sendResetLink": "Kurtarma Bağlantısı Gönder",
     "validation": {
       "emailInvalid": "Geçersiz e-posta adresi",
       "passwordMinLength": "Şifre en az 6 karakter olmalıdır"
@@ -75,7 +83,8 @@
       "loginFailed": "Giriş yapılamadı: E-posta veya şifre hatalı.",
       "signupFailed": "Kayıt başarısız: {message}",
       "signupSuccess": "Kayıt başarılı! Lütfen e-posta kutunuzu kontrol edin ve gelen onay linkine tıklayın.",
-      "authError": "Kimlik doğrulama hatası"
+      "authError": "Kimlik doğrulama hatası",
+      "resetSuccess": "Şifre sıfırlama bağlantısı gönderildi! Lütfen e-posta kutunuzu kontrol edin."
     }
   },
   "Onboarding": {

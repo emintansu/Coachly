@@ -11,6 +11,7 @@
     "delete": "Delete",
     "cancel": "Cancel",
     "confirm": "Confirm",
+    "close": "Close",
     "loading": "Loading...",
     "language": "Language",
     "turkish": "Türkçe",
@@ -53,7 +54,11 @@
     "interactiveDesc": "Update your plan however you like, customize sets and reps for any exercise.",
     "footerRights": "© {year} Coachly. All rights reserved.",
     "footerPrivacy": "Privacy Policy",
-    "footerTerms": "Terms of Use"
+    "footerTerms": "Terms of Use",
+    "privacyTitle": "Privacy Policy",
+    "privacyContent": "At Coachly, we respect your privacy and protect your personal data. We collect details such as height, weight, age, and fitness goals to tailor a personalized weekly plan for you. The data is processed securely and processed through Google Gemini AI to generate custom diet and exercise routines. We do not sell or share your data with third parties.",
+    "termsTitle": "Terms of Use",
+    "termsContent": "By using Coachly, you agree to our terms. Our service provides AI-generated fitness and diet advice. These suggestions are created for educational and informational purposes only and do not constitute professional medical or nutrition advice. The minimum age for registering and using Coachly is 15. Always consult a physician before initiating any diet or workout plan."
   },
   "Auth": {
     "email": "Email",
@@ -67,6 +72,9 @@
     "emailPlaceholder": "you@example.com",
     "fullNamePlaceholder": "John Doe",
     "passwordPlaceholder": "••••••••",
+    "forgotPasswordTitle": "Reset Password",
+    "forgotPasswordDesc": "Enter your email address below, and we'll send you a recovery link to reset your password.",
+    "sendResetLink": "Send Recovery Link",
     "validation": {
       "emailInvalid": "Invalid email address",
       "passwordMinLength": "Password must be at least 6 characters"
@@ -75,7 +83,8 @@
       "loginFailed": "Login failed: Incorrect email or password.",
       "signupFailed": "Registration failed: {message}",
       "signupSuccess": "Registration successful! Please check your inbox and click the verification link.",
-      "authError": "Authentication error"
+      "authError": "Authentication error",
+      "resetSuccess": "Password reset link sent! Please check your inbox."
     }
   },
   "Onboarding": {
