@@ -8,8 +8,13 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { generateWorkoutPlan } from '@/app/actions/generatePlan';
 import { workoutPlanZodSchema } from '@/lib/schemas/workoutPlan';
 import { useCoachStore } from '@/store/useCoachStore';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { toast } from 'sonner';
 import { 
   Dumbbell, 
   Apple, 
@@ -23,7 +28,6 @@ import {
   Flame, 
   Calendar,
   AlertCircle,
-  X,
   Check,
   Zap,
   Info
@@ -68,7 +72,6 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
   
   // Modal states
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [editingExercise, setEditingExercise] = useState<{
     dayIdx: number;
     exerciseIdx: number;
@@ -99,7 +102,6 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
   // AI Plan Generation Mutation
   const generateMutation = useMutation({
     mutationFn: async () => {
-      setErrorMessage(null);
       const result = await generateWorkoutPlan(locale);
       if (!result.success) {
         throw new Error(result.error);
@@ -112,17 +114,17 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
         setSelectedPlanId(newPlan.id);
         setSelectedDayIdx(0);
       }
+      toast.success(t('planGeneratedSuccess') || 'New workout plan generated successfully!');
     },
     onError: (err: any) => {
       console.error(err);
-      setErrorMessage(t('errorGeneration'));
+      toast.error(t('errorGeneration'));
     }
   });
 
   // Edit Exercise Mutation
   const updatePlanMutation = useMutation({
     mutationFn: async (updatedPlanData: any) => {
-      setErrorMessage(null);
       // Validate schema
       const parseResult = workoutPlanZodSchema.safeParse(updatedPlanData);
       if (!parseResult.success) {
@@ -138,17 +140,17 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workout_plans'] });
       setEditingExercise(null);
+      toast.success(t('exerciseUpdatedSuccess') || 'Exercise details updated successfully!');
     },
     onError: (err: any) => {
       console.error(err);
-      setErrorMessage(t('errorUpdate'));
+      toast.error(t('errorUpdate'));
     }
   });
 
   // Delete Plan Mutation
   const deletePlanMutation = useMutation({
     mutationFn: async (planId: string) => {
-      setErrorMessage(null);
       const { error } = await supabase
         .from('workout_plans')
         .delete()
@@ -160,10 +162,11 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
       setIsDeleting(null);
       setSelectedPlanId(null);
       setSelectedDayIdx(0);
+      toast.success(t('planDeletedSuccess') || 'Workout plan deleted successfully.');
     },
     onError: (err: any) => {
       console.error(err);
-      setErrorMessage(t('errorDeletion'));
+      toast.error(t('errorDeletion'));
     }
   });
 
@@ -194,41 +197,24 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
       <Navbar />
       <div className="flex-grow w-full max-w-7xl mx-auto px-4 py-8 flex flex-col gap-6">
 
-        {/* Error message banner */}
-        {errorMessage && (
-          <div className="flex items-start gap-2.5 p-4 rounded-xl border border-red-500/30 bg-red-500/5 text-red-200 text-xs">
-            <AlertCircle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
-            <div className="flex-grow">
-              <span className="font-bold block mb-0.5">{t('errorTitle')}</span>
-              <span>{errorMessage}</span>
-            </div>
-            <button
-              onClick={() => setErrorMessage(null)}
-              className="text-slate-500 hover:text-white transition-colors font-bold text-xs px-1"
-            >
-              ✕
-            </button>
-          </div>
-        )}
-
         <div className="flex flex-col lg:flex-row gap-8">
       
       {/* SIDEBAR */}
       <aside className="w-full lg:w-80 space-y-6 shrink-0">
         
         {/* Profile Card */}
-        <div className="rounded-2xl border border-white/10 bg-[#12121a]/85 p-6 shadow-xl backdrop-blur-md space-y-5">
+        <Card className="border-white/10 bg-[#12121a]/85 p-6 shadow-xl backdrop-blur-md space-y-5 ring-0">
           <div className="flex items-center gap-3 pb-4 border-b border-white/5">
             <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-emerald-500 to-violet-600 flex items-center justify-center text-white font-bold shrink-0">
               <User className="h-5 w-5" />
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 text-left">
               <span className="block text-xs font-extrabold text-emerald-400 uppercase tracking-widest">{t('activeMember')}</span>
               <span className="block text-sm text-white truncate font-bold mt-0.5">{userEmail}</span>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-y-4 gap-x-6 text-xs">
+          <div className="grid grid-cols-2 gap-y-4 gap-x-6 text-xs text-left">
             <div>
               <span className="block text-slate-500 font-extrabold uppercase tracking-widest text-[11px]">{t('goal')}</span>
               <span className="block text-white font-bold mt-1 text-[13px]">
@@ -260,7 +246,7 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
               variant="outline"
               size="sm"
               onClick={() => router.push('/settings')}
-              className="flex-1 border-white/10 hover:bg-white/5 text-xs text-slate-300 font-bold gap-1.5 h-10 rounded-lg"
+              className="flex-1 border-white/10 hover:bg-white/5 text-xs text-slate-300 font-bold gap-1.5 h-10 rounded-lg cursor-pointer"
             >
               <Settings className="h-4 w-4 text-slate-400" />
               {tCommon('settings')}
@@ -269,15 +255,15 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
               variant="outline"
               size="sm"
               onClick={handleLogout}
-              className="border-white/10 hover:bg-red-500/10 hover:text-red-400 text-xs text-slate-300 px-3 h-10 rounded-lg"
+              className="border-white/10 hover:bg-red-500/10 hover:text-red-400 text-xs text-slate-300 px-3 h-10 rounded-lg cursor-pointer"
             >
               <LogOut className="h-4 w-4" />
             </Button>
           </div>
-        </div>
+        </Card>
 
         {/* Plans List History */}
-        <div className="rounded-2xl border border-white/10 bg-[#12121a]/85 p-6 shadow-xl backdrop-blur-md space-y-4">
+        <Card className="border-white/10 bg-[#12121a]/85 p-6 shadow-xl backdrop-blur-md space-y-4 ring-0 text-left">
           <h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest">
             {t('myPlans')}
           </h3>
@@ -297,7 +283,7 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
                     setSelectedPlanId(p.id);
                     setSelectedDayIdx(0);
                   }}
-                  className={`w-full flex items-center justify-between p-3.5 rounded-xl border text-left text-xs font-bold transition-all duration-200 ${
+                  className={`w-full flex items-center justify-between p-3.5 rounded-xl border text-left text-xs font-bold transition-all duration-200 cursor-pointer ${
                     activePlan?.id === p.id
                       ? 'border-emerald-500 bg-emerald-500/5 text-white'
                       : 'border-white/5 bg-white/[0.01] hover:bg-white/5 text-slate-400'
@@ -319,7 +305,7 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
           <Button
             onClick={() => generateMutation.mutate()}
             disabled={generateMutation.isPending}
-            className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:brightness-110 text-white font-extrabold h-11 shadow-lg shadow-emerald-500/10 flex items-center justify-center gap-2 rounded-xl text-xs"
+            className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:brightness-110 text-white font-extrabold h-11 shadow-lg shadow-emerald-500/10 flex items-center justify-center gap-2 rounded-xl text-xs border-none cursor-pointer"
           >
             {generateMutation.isPending ? (
               <>
@@ -333,7 +319,7 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
               </>
             )}
           </Button>
-        </div>
+        </Card>
       </aside>
 
       {/* MAIN VIEW */}
@@ -341,18 +327,18 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
         
         {/* Loading overlay */}
         {generateMutation.isPending && (
-          <div className="flex-1 flex flex-col justify-center items-center rounded-2xl border border-white/10 bg-[#12121a]/85 p-8 shadow-xl backdrop-blur-md min-h-[400px]">
+          <Card className="flex-1 flex flex-col justify-center items-center border-white/10 bg-[#12121a]/85 p-8 shadow-xl backdrop-blur-md min-h-[400px] ring-0">
             <Loader2 className="h-9 w-9 animate-spin text-emerald-400 mb-4" />
             <h2 className="text-xl font-bold text-white mb-2">{t('generating')}</h2>
             <p className="text-xs text-slate-400 text-center max-w-sm">
               {t('generatingDesc')}
             </p>
-          </div>
+          </Card>
         )}
 
         {/* Empty Active Plan */}
         {!generateMutation.isPending && !activePlan && (
-          <div className="flex-1 flex flex-col justify-center items-center rounded-2xl border border-white/10 bg-[#12121a]/85 p-8 shadow-xl backdrop-blur-md min-h-[400px] text-center space-y-6">
+          <Card className="flex-1 flex flex-col justify-center items-center border-white/10 bg-[#12121a]/85 p-8 shadow-xl backdrop-blur-md min-h-[400px] text-center space-y-6 ring-0">
             <div className="h-16 w-16 rounded-full bg-white/5 flex items-center justify-center text-slate-500">
               <Dumbbell className="h-8 w-8 animate-bounce" />
             </div>
@@ -362,12 +348,12 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
             </div>
             <Button
               onClick={() => generateMutation.mutate()}
-              className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:brightness-110 text-white font-extrabold h-12 px-8 rounded-xl shadow-lg shadow-emerald-500/10 flex items-center gap-2"
+              className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:brightness-110 text-white font-extrabold h-12 px-8 rounded-xl shadow-lg shadow-emerald-500/10 flex items-center gap-2 border-none cursor-pointer"
             >
               <Plus className="h-5 w-5" />
               {t('generateNewPlan')}
             </Button>
-          </div>
+          </Card>
         )}
 
         {/* Plan display panel */}
@@ -375,8 +361,8 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
           <div className="flex-grow space-y-6">
             
             {/* Header controls bar */}
-            <div className="rounded-2xl border border-white/10 bg-[#12121a]/85 p-6 shadow-xl backdrop-blur-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
+            <Card className="border-white/10 bg-[#12121a]/85 p-6 shadow-xl backdrop-blur-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ring-0">
+              <div className="flex items-center gap-4 text-left">
                 <div className="h-12 w-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shadow-inner">
                   <Zap className="h-6 w-6 text-emerald-400" />
                 </div>
@@ -388,40 +374,34 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
 
               {/* Workout vs Nutrition Toggle & Trash */}
               <div className="flex items-center gap-2 w-full sm:w-auto self-stretch sm:self-auto">
-                <div className="flex bg-white/5 p-1 rounded-xl border border-white/5 flex-grow sm:flex-grow-0">
-                  <button
-                    onClick={() => setActiveTab('workout')}
-                    className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 ${
-                      activeTab === 'workout' 
-                        ? 'bg-emerald-500 text-white shadow-md' 
-                        : 'text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    <Dumbbell className="h-3.5 w-3.5" />
-                    {t('workoutPlan')}
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('nutrition')}
-                    className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 ${
-                      activeTab === 'nutrition' 
-                        ? 'bg-emerald-500 text-white shadow-md' 
-                        : 'text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    <Apple className="h-3.5 w-3.5" />
-                    {t('nutritionPlan')}
-                  </button>
-                </div>
+                <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as any)} className="flex-grow sm:flex-grow-0">
+                  <TabsList className="bg-white/5 p-1 rounded-xl border border-white/5 flex w-full sm:w-auto">
+                    <TabsTrigger 
+                      value="workout" 
+                      className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 text-xs font-bold data-active:bg-emerald-500 data-active:text-white"
+                    >
+                      <Dumbbell className="h-3.5 w-3.5" />
+                      {t('workoutPlan')}
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="nutrition" 
+                      className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 text-xs font-bold data-active:bg-emerald-500 data-active:text-white"
+                    >
+                      <Apple className="h-3.5 w-3.5" />
+                      {t('nutritionPlan')}
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
 
                 <Button
                   variant="ghost"
                   onClick={() => setIsDeleting(activePlan.id)}
-                  className="text-slate-500 hover:text-red-400 p-2.5 h-10 w-10 rounded-xl hover:bg-red-500/5 transition-all shrink-0 border border-white/5 bg-white/[0.01]"
+                  className="text-slate-500 hover:text-red-400 p-2.5 h-10 w-10 rounded-xl hover:bg-red-500/5 transition-all shrink-0 border border-white/5 bg-white/[0.01] cursor-pointer"
                 >
                   <Trash2 className="h-4.5 w-4.5" />
                 </Button>
               </div>
-            </div>
+            </Card>
 
             {/* TAB CONTENT: WORKOUT PLAN */}
             {activeTab === 'workout' && (
@@ -433,7 +413,7 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
                     <button
                       key={idx}
                       onClick={() => setSelectedDayIdx(idx)}
-                      className={`px-5 py-3.5 rounded-xl border text-xs font-black shrink-0 transition-all duration-200 ${
+                      className={`px-5 py-3.5 rounded-xl border text-xs font-black shrink-0 transition-all duration-200 cursor-pointer ${
                         selectedDayIdx === idx
                           ? 'border-emerald-500 bg-emerald-500/10 text-white shadow-md'
                           : 'border-white/5 bg-[#12121a]/60 text-slate-400 hover:text-slate-200'
@@ -462,16 +442,16 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
                   {/* Exercises list */}
                   <div className="grid grid-cols-1 gap-4">
                     {currentDay?.exercises.map((ex: any, idx: number) => (
-                      <div 
+                      <Card 
                         key={idx}
-                        className="rounded-2xl border border-white/10 bg-[#12121a]/90 p-5 hover:border-emerald-500/20 transition-all duration-300 shadow-lg space-y-4 relative overflow-hidden group"
+                        className="rounded-2xl border border-white/10 bg-[#12121a]/90 p-5 hover:border-emerald-500/20 transition-all duration-300 shadow-lg space-y-4 relative overflow-hidden group ring-0"
                       >
                         {/* Glow effect on hover */}
                         <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
                         {/* Title Header */}
                         <div className="flex items-start justify-between gap-4 relative z-10">
-                          <h3 className="text-base sm:text-lg font-black text-white leading-snug flex items-center gap-2">
+                          <h3 className="text-base sm:text-lg font-black text-white leading-snug flex items-center gap-2 text-left">
                             <Dumbbell className="h-5 w-5 text-emerald-400 shrink-0" />
                             {ex.exercise_name}
                           </h3>
@@ -483,7 +463,7 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
                               exerciseIdx: idx,
                               ...ex
                             })}
-                            className="text-slate-500 hover:text-emerald-400 p-2 h-8 w-8 rounded-lg hover:bg-emerald-500/5 transition-all shrink-0 border border-white/5 bg-white/[0.01]"
+                            className="text-slate-500 hover:text-emerald-400 p-2 h-8 w-8 rounded-lg hover:bg-emerald-500/5 transition-all shrink-0 border border-white/5 bg-white/[0.01] cursor-pointer"
                           >
                             <Edit2 className="h-3.5 w-3.5" />
                           </Button>
@@ -512,12 +492,12 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
 
                         {/* Description Notes */}
                         {ex.notes && (
-                          <div className="bg-white/[0.02] border border-white/5 rounded-xl p-3.5 text-xs text-slate-300 leading-relaxed font-medium flex gap-2 relative z-10">
+                          <div className="bg-white/[0.02] border border-white/5 rounded-xl p-3.5 text-xs text-slate-300 leading-relaxed font-medium flex gap-2 relative z-10 text-left">
                             <Info className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
                             <span>{ex.notes}</span>
                           </div>
                         )}
-                      </div>
+                      </Card>
                     ))}
                   </div>
                 </div>
@@ -532,45 +512,45 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
                 <div className="lg:col-span-7 space-y-4">
                   
                   {/* Breakfast */}
-                  <div className="rounded-2xl border-l-4 border-l-emerald-500 border-y border-r border-white/10 bg-[#12121a]/85 p-5 shadow-xl space-y-2 backdrop-blur-md">
+                  <Card className="rounded-2xl border-l-4 border-l-emerald-500 border-y border-r border-white/10 bg-[#12121a]/85 p-5 shadow-xl space-y-2 backdrop-blur-md ring-0 text-left">
                     <span className="block text-xs font-extrabold uppercase tracking-widest text-emerald-400">
                       {t('nutritionMeals.breakfast')}
                     </span>
                     <p className="text-sm text-slate-200 leading-relaxed font-bold">
                       {activePlan.plan_data.nutrition_plan.daily_meal_template.breakfast}
                     </p>
-                  </div>
+                  </Card>
 
                   {/* Lunch */}
-                  <div className="rounded-2xl border-l-4 border-l-violet-500 border-y border-r border-white/10 bg-[#12121a]/85 p-5 shadow-xl space-y-2 backdrop-blur-md">
+                  <Card className="rounded-2xl border-l-4 border-l-violet-500 border-y border-r border-white/10 bg-[#12121a]/85 p-5 shadow-xl space-y-2 backdrop-blur-md ring-0 text-left">
                     <span className="block text-xs font-extrabold uppercase tracking-widest text-violet-400">
                       {t('nutritionMeals.lunch')}
                     </span>
                     <p className="text-sm text-slate-200 leading-relaxed font-bold">
                       {activePlan.plan_data.nutrition_plan.daily_meal_template.lunch}
                     </p>
-                  </div>
+                  </Card>
 
                   {/* Dinner */}
-                  <div className="rounded-2xl border-l-4 border-l-teal-500 border-y border-r border-white/10 bg-[#12121a]/85 p-5 shadow-xl space-y-2 backdrop-blur-md">
+                  <Card className="rounded-2xl border-l-4 border-l-teal-500 border-y border-r border-white/10 bg-[#12121a]/85 p-5 shadow-xl space-y-2 backdrop-blur-md ring-0 text-left">
                     <span className="block text-xs font-extrabold uppercase tracking-widest text-teal-400">
                       {t('nutritionMeals.dinner')}
                     </span>
                     <p className="text-sm text-slate-200 leading-relaxed font-bold">
                       {activePlan.plan_data.nutrition_plan.daily_meal_template.dinner}
                     </p>
-                  </div>
+                  </Card>
 
                   {/* Snacks */}
                   {activePlan.plan_data.nutrition_plan.daily_meal_template.snacks && (
-                    <div className="rounded-2xl border-l-4 border-l-amber-500 border-y border-r border-white/10 bg-[#12121a]/85 p-5 shadow-xl space-y-2 backdrop-blur-md">
+                    <Card className="rounded-2xl border-l-4 border-l-amber-500 border-y border-r border-white/10 bg-[#12121a]/85 p-5 shadow-xl space-y-2 backdrop-blur-md ring-0 text-left">
                       <span className="block text-xs font-extrabold uppercase tracking-widest text-amber-400">
                         {t('nutritionMeals.snacks')}
                       </span>
                       <p className="text-sm text-slate-200 leading-relaxed font-bold">
                         {activePlan.plan_data.nutrition_plan.daily_meal_template.snacks}
                       </p>
-                    </div>
+                    </Card>
                   )}
                 </div>
 
@@ -578,7 +558,7 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
                 <div className="lg:col-span-5 space-y-6">
                   
                   {/* Gauge Macros block */}
-                  <div className="rounded-2xl border border-white/10 bg-[#12121a]/85 p-6 shadow-xl backdrop-blur-md space-y-4">
+                  <Card className="border-white/10 bg-[#12121a]/85 p-6 shadow-xl backdrop-blur-md space-y-4 ring-0 text-left">
                     <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">
                       {t('macroSummary')}
                     </h3>
@@ -628,10 +608,10 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
                         <span className="text-[11px] text-teal-500 font-bold">g</span>
                       </div>
                     </div>
-                  </div>
+                  </Card>
 
                   {/* Tips card */}
-                  <div className="rounded-2xl border border-white/10 bg-[#12121a]/85 p-6 shadow-xl backdrop-blur-md space-y-4">
+                  <Card className="border-white/10 bg-[#12121a]/85 p-6 shadow-xl backdrop-blur-md space-y-4 ring-0 text-left">
                     <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">
                       {t('generalTips')}
                     </h3>
@@ -643,10 +623,10 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
                         </li>
                       ))}
                     </ul>
-                  </div>
+                  </Card>
 
                   {/* Medical Disclaimer Card */}
-                  <div className="rounded-2xl border border-amber-500/25 bg-amber-500/5 p-5 shadow-xl space-y-2.5 backdrop-blur-md">
+                  <Card className="border border-amber-500/25 bg-amber-500/5 p-5 shadow-xl space-y-2.5 backdrop-blur-md ring-0 text-left">
                     <div className="flex items-center gap-2 text-amber-400">
                       <AlertCircle className="h-4.5 w-4.5 shrink-0" />
                       <span className="text-[10px] font-black uppercase tracking-widest">
@@ -656,7 +636,7 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
                     <p className="text-[11px] text-slate-400 leading-relaxed font-semibold">
                       {t('medicalDisclaimerText')}
                     </p>
-                  </div>
+                  </Card>
 
                 </div>
               </div>
@@ -665,184 +645,146 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
         )}
       </main>
 
-      {/* EDIT MODAL */}
-      <AnimatePresence>
-        {editingExercise && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setEditingExercise(null)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            />
-            
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="relative w-full max-w-md rounded-2xl border border-white/10 bg-[#161622] p-6 shadow-2xl z-10"
-            >
-              <div className="flex items-center justify-between border-b border-white/5 pb-3 mb-5">
-                <span className="text-sm font-bold text-white flex items-center gap-2">
-                  <Edit2 className="h-4 w-4 text-emerald-400" />
-                  {t('editExercise')}
-                </span>
-                <button 
-                  onClick={() => setEditingExercise(null)}
-                  className="text-slate-500 hover:text-white"
-                >
-                  <X className="h-4.5 w-4.5" />
-                </button>
+      {/* EDIT EXERCISE DIALOG */}
+      <Dialog open={!!editingExercise} onOpenChange={(open) => { if (!open) setEditingExercise(null); }}>
+        <DialogContent className="max-w-md rounded-2xl border border-white/10 bg-[#161622] p-6 shadow-2xl z-50 text-left">
+          <DialogHeader className="border-b border-white/5 pb-3 mb-5">
+            <DialogTitle className="text-sm font-bold text-white flex items-center gap-2 text-left">
+              <Edit2 className="h-4 w-4 text-emerald-400" />
+              {t('editExercise')}
+            </DialogTitle>
+          </DialogHeader>
+
+          {editingExercise && (
+            <form onSubmit={saveExerciseEdit} className="space-y-4">
+              <div className="space-y-1.5 text-left">
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                  {t('exerciseName')}
+                </Label>
+                <Input
+                  type="text"
+                  value={editingExercise.exercise_name}
+                  onChange={(e) => setEditingExercise({ ...editingExercise, exercise_name: e.target.value })}
+                  required
+                  className="h-10 border-white/10 bg-white/5 text-slate-100 text-xs focus-visible:border-emerald-500/50 focus-visible:ring-0"
+                />
               </div>
 
-              <form onSubmit={saveExerciseEdit} className="space-y-4">
+              <div className="grid grid-cols-3 gap-3 text-left">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                    {t('exerciseName')}
-                  </label>
-                  <input
-                    type="text"
-                    value={editingExercise.exercise_name}
-                    onChange={(e) => setEditingExercise({ ...editingExercise, exercise_name: e.target.value })}
+                  <div className="min-h-[32px] flex items-end">
+                    <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                      {t('sets')}
+                    </Label>
+                  </div>
+                  <Input
+                    type="number"
+                    value={editingExercise.sets}
+                    onChange={(e) => setEditingExercise({ ...editingExercise, sets: parseInt(e.target.value) || 0 })}
                     required
-                    className="w-full h-10 px-3.5 rounded-lg border border-white/10 bg-white/5 text-slate-100 text-xs focus:outline-none focus:border-emerald-500/50"
+                    className="h-10 border-white/10 bg-white/5 text-slate-100 text-xs focus-visible:border-emerald-500/50 focus-visible:ring-0 text-center"
                   />
-                </div>
-
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="space-y-1.5">
-                    <div className="min-h-[32px] flex items-end">
-                      <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                        {t('sets')}
-                      </label>
-                    </div>
-                    <input
-                      type="number"
-                      value={editingExercise.sets}
-                      onChange={(e) => setEditingExercise({ ...editingExercise, sets: parseInt(e.target.value) || 0 })}
-                      required
-                      className="w-full h-10 px-3.5 rounded-lg border border-white/10 bg-white/5 text-slate-100 text-xs focus:outline-none focus:border-emerald-500/50 text-center"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <div className="min-h-[32px] flex items-end">
-                      <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                        {t('reps')}
-                      </label>
-                    </div>
-                    <input
-                      type="text"
-                      value={editingExercise.reps_or_duration}
-                      onChange={(e) => setEditingExercise({ ...editingExercise, reps_or_duration: e.target.value })}
-                      required
-                      className="w-full h-10 px-3.5 rounded-lg border border-white/10 bg-white/5 text-slate-100 text-xs focus:outline-none focus:border-emerald-500/50 text-center"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <div className="min-h-[32px] flex items-end">
-                      <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                        {t('rest')}
-                      </label>
-                    </div>
-                    <input
-                      type="number"
-                      value={editingExercise.rest_seconds}
-                      onChange={(e) => setEditingExercise({ ...editingExercise, rest_seconds: parseInt(e.target.value) || 0 })}
-                      required
-                      className="w-full h-10 px-3.5 rounded-lg border border-white/10 bg-white/5 text-slate-100 text-xs focus:outline-none focus:border-emerald-500/50 text-center"
-                    />
-                  </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                    {t('notes')}
-                  </label>
-                  <textarea
-                    value={editingExercise.notes || ''}
-                    onChange={(e) => setEditingExercise({ ...editingExercise, notes: e.target.value })}
-                    rows={2.5}
-                    className="w-full p-3 rounded-lg border border-white/10 bg-white/5 text-slate-100 text-xs focus:outline-none focus:border-emerald-500/50 resize-none leading-relaxed"
+                  <div className="min-h-[32px] flex items-end">
+                    <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                      {t('reps')}
+                    </Label>
+                  </div>
+                  <Input
+                    type="text"
+                    value={editingExercise.reps_or_duration}
+                    onChange={(e) => setEditingExercise({ ...editingExercise, reps_or_duration: e.target.value })}
+                    required
+                    className="h-10 border-white/10 bg-white/5 text-slate-100 text-xs focus-visible:border-emerald-500/50 focus-visible:ring-0 text-center"
                   />
                 </div>
 
-                <Button
-                  type="submit"
-                  disabled={updatePlanMutation.isPending}
-                  className="w-full h-11 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:brightness-110 text-white font-extrabold rounded-lg shadow-lg flex items-center justify-center gap-1.5 text-xs"
-                >
-                  {updatePlanMutation.isPending ? (
-                    <Loader2 className="h-4.5 w-4.5 animate-spin" />
-                  ) : (
-                    <>
-                      <Check className="h-4.5 w-4.5" />
-                      {tCommon('save')}
-                    </>
-                  )}
-                </Button>
-              </form>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+                <div className="space-y-1.5">
+                  <div className="min-h-[32px] flex items-end">
+                    <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                      {t('rest')}
+                    </Label>
+                  </div>
+                  <Input
+                    type="number"
+                    value={editingExercise.rest_seconds}
+                    onChange={(e) => setEditingExercise({ ...editingExercise, rest_seconds: parseInt(e.target.value) || 0 })}
+                    required
+                    className="h-10 border-white/10 bg-white/5 text-slate-100 text-xs focus-visible:border-emerald-500/50 focus-visible:ring-0 text-center"
+                  />
+                </div>
+              </div>
 
-      {/* CONFIRM DELETE MODAL */}
-      <AnimatePresence>
-        {isDeleting && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              <div className="space-y-1.5 text-left">
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                  {t('notes')}
+                </Label>
+                <textarea
+                  value={editingExercise.notes || ''}
+                  onChange={(e) => setEditingExercise({ ...editingExercise, notes: e.target.value })}
+                  rows={2.5}
+                  className="w-full p-3 rounded-lg border border-white/10 bg-white/5 text-slate-100 text-xs focus:outline-none focus:border-emerald-500/50 resize-none leading-relaxed"
+                />
+              </div>
+
+              <Button
+                type="submit"
+                disabled={updatePlanMutation.isPending}
+                className="w-full h-11 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:brightness-110 text-white font-extrabold rounded-lg shadow-lg flex items-center justify-center gap-1.5 text-xs border-none cursor-pointer"
+              >
+                {updatePlanMutation.isPending ? (
+                  <Loader2 className="h-4.5 w-4.5 animate-spin" />
+                ) : (
+                  <>
+                    <Check className="h-4.5 w-4.5" />
+                    {tCommon('save')}
+                  </>
+                )}
+              </Button>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* CONFIRM DELETE DIALOG */}
+      <Dialog open={!!isDeleting} onOpenChange={(open) => { if (!open) setIsDeleting(null); }}>
+        <DialogContent className="max-w-sm rounded-2xl border border-white/10 bg-[#161622] p-6 shadow-2xl z-50 text-center space-y-6">
+          <div className="h-12 w-12 rounded-full bg-red-500/10 text-red-400 flex items-center justify-center mx-auto">
+            <AlertCircle className="h-6 w-6" />
+          </div>
+
+          <div className="space-y-2">
+            <DialogTitle className="text-base font-bold text-white text-center">{tCommon('delete')}</DialogTitle>
+            <DialogDescription className="text-xs text-slate-400 leading-relaxed font-semibold text-center">
+              {t('deleteConfirm')}
+            </DialogDescription>
+          </div>
+
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
               onClick={() => setIsDeleting(null)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            />
-            
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="relative w-full max-w-sm rounded-2xl border border-white/10 bg-[#161622] p-6 shadow-2xl z-10 text-center space-y-6"
+              disabled={deletePlanMutation.isPending}
+              className="flex-1 border-white/10 hover:bg-white/5 text-xs text-slate-300 h-10 rounded-lg cursor-pointer"
             >
-              <div className="h-12 w-12 rounded-full bg-red-500/10 text-red-400 flex items-center justify-center mx-auto">
-                <AlertCircle className="h-6 w-6" />
-              </div>
-
-              <div className="space-y-2">
-                <h3 className="text-base font-bold text-white">{tCommon('delete')}</h3>
-                <p className="text-xs text-slate-400 leading-relaxed font-semibold">
-                  {t('deleteConfirm')}
-                </p>
-              </div>
-
-              <div className="flex gap-3">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsDeleting(null)}
-                  disabled={deletePlanMutation.isPending}
-                  className="flex-1 border-white/10 hover:bg-white/5 text-xs text-slate-300 h-10 rounded-lg"
-                >
-                  {tCommon('cancel')}
-                </Button>
-                <Button
-                  onClick={() => deletePlanMutation.mutate(isDeleting)}
-                  disabled={deletePlanMutation.isPending}
-                  className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold text-xs h-10 rounded-lg"
-                >
-                  {deletePlanMutation.isPending ? (
-                    <Loader2 className="h-4.5 w-4.5 animate-spin mx-auto" />
-                  ) : (
-                    tCommon('delete')
-                  )}
-                </Button>
-              </div>
-            </motion.div>
+              {tCommon('cancel')}
+            </Button>
+            <Button
+              onClick={() => deletePlanMutation.mutate(isDeleting!)}
+              disabled={deletePlanMutation.isPending}
+              className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold text-xs h-10 rounded-lg border-none cursor-pointer"
+            >
+              {deletePlanMutation.isPending ? (
+                <Loader2 className="h-4.5 w-4.5 animate-spin mx-auto" />
+              ) : (
+                tCommon('delete')
+              )}
+            </Button>
           </div>
-        )}
-      </AnimatePresence>
+        </DialogContent>
+      </Dialog>
 
         </div>
       </div>

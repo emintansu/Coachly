@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/routing';
 import { createClient } from '@/lib/supabase/client';
-import LanguageSwitcher from './LanguageSwitcher';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Dumbbell, LogOut } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import LanguageSwitcher from './LanguageSwitcher';
 
 export default function Navbar() {
   const t = useTranslations('Common');
@@ -62,20 +64,25 @@ export default function Navbar() {
           
           {!loading && (
             user ? (
-              <button
+              <Button
                 id="nav-logout-btn"
+                variant="ghost"
+                size="sm"
                 onClick={handleLogout}
-                className="text-sm font-semibold text-slate-300 hover:text-red-400 flex items-center gap-1.5 transition-colors duration-200 bg-transparent border-none cursor-pointer focus:outline-none"
+                className="text-slate-300 hover:text-red-400 flex items-center gap-1.5 transition-colors duration-200"
               >
                 <LogOut className="h-4 w-4" />
                 <span>{t('logout')}</span>
-              </button>
+              </Button>
             ) : (
               <>
                 <Link
                   id="nav-login-link"
                   href="/auth?mode=login"
-                  className="text-sm font-medium text-slate-300 hover:text-white transition-colors duration-200"
+                  className={cn(
+                    buttonVariants({ variant: 'ghost', size: 'sm' }),
+                    "text-slate-300 hover:text-white transition-colors duration-200"
+                  )}
                 >
                   {t('login')}
                 </Link>
@@ -83,7 +90,10 @@ export default function Navbar() {
                 <Link
                   id="nav-signup-link"
                   href="/auth?mode=signup"
-                  className="inline-flex h-9 items-center justify-center rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-600 px-4 text-sm font-semibold text-white shadow-lg shadow-emerald-500/20 hover:brightness-110 active:scale-95 transition-all duration-200"
+                  className={cn(
+                    buttonVariants({ size: 'sm' }),
+                    "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/20 hover:brightness-110 active:scale-95 transition-all duration-200 border-none"
+                  )}
                 >
                   {t('signup')}
                 </Link>

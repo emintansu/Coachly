@@ -9,15 +9,16 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { 
-  Loader2, 
-  ChevronRight, 
-  ChevronLeft, 
-  Flame, 
-  Dumbbell, 
+import { Input } from '@/components/ui/input';
+import { toast } from 'sonner';
+import {
+  Loader2,
+  ChevronRight,
+  ChevronLeft,
+  Flame,
+  Dumbbell,
   Award,
-  ChevronLast,
-  AlertCircle
+  ChevronLast
 } from 'lucide-react';
 
 const onboardingBaseSchema = z.object({
@@ -40,7 +41,6 @@ export default function OnboardingPage() {
   const [step, setStep] = useState(1);
   const [loadingUser, setLoadingUser] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
   const totalSteps = 8;
 
@@ -116,7 +116,6 @@ export default function OnboardingPage() {
   const onSubmit = async (values: OnboardingValues) => {
     if (step < totalSteps) return;
     setSaving(true);
-    setError(null);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No active user');
@@ -137,12 +136,11 @@ export default function OnboardingPage() {
         .eq('id', user.id);
 
       if (updateError) throw updateError;
-      
+
       router.push('/dashboard');
     } catch (err) {
       console.error(err);
-      setError(t('saveError'));
-    } finally {
+      toast.error(t('saveError'));
       setSaving(false);
     }
   };
@@ -191,7 +189,7 @@ export default function OnboardingPage() {
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="w-full max-w-xl relative z-10 flex flex-col items-center">
-        
+
         {/* Progress header */}
         <div className="w-full mb-6">
           <div className="flex justify-between items-center text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
@@ -199,7 +197,7 @@ export default function OnboardingPage() {
             <span className="text-emerald-400">{Math.round((step / totalSteps) * 100)}%</span>
           </div>
           <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-            <div 
+            <div
               className="h-full bg-gradient-to-r from-emerald-500 to-violet-600 transition-all duration-300"
               style={{ width: `${(step / totalSteps) * 100}%` }}
             />
@@ -208,24 +206,9 @@ export default function OnboardingPage() {
 
         {/* Form Box */}
         <div className="w-full rounded-2xl border border-white/10 bg-[#12121a]/95 p-8 shadow-2xl backdrop-blur-md">
-          {error && (
-            <div className="flex items-start gap-2.5 p-4 mb-6 rounded-xl border border-red-500/30 bg-red-500/5 text-red-200 text-xs">
-              <AlertCircle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
-              <div className="flex-grow">
-                <span>{error}</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setError(null)}
-                className="text-slate-500 hover:text-white transition-colors font-bold text-xs px-1"
-              >
-                ✕
-              </button>
-            </div>
-          )}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 min-h-[340px] flex flex-col justify-between">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 min-h-[380px] flex flex-col justify-between">
             <AnimatePresence mode="wait">
-              
+
               {/* STEP 1: GOAL */}
               {step === 1 && (
                 <motion.div
@@ -234,31 +217,30 @@ export default function OnboardingPage() {
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  className="space-y-6"
+                  className="space-y-6 flex flex-col items-center text-center w-full"
                 >
-                  <div className="space-y-1">
+                  <div className="space-y-2">
                     <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
                       {t('goals.title')}
                     </h2>
-                    <p className="text-xs text-slate-400">{t('subtitle')}</p>
+                    <p className="text-sm text-slate-400 max-w-sm mx-auto">{t('subtitle')}</p>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-3.5">
+                  <div className="grid grid-cols-1 gap-3.5 w-full">
                     {/* Goal Card 1 */}
                     <button
                       type="button"
                       onClick={() => setValue('goal', 'lose_weight', { shouldValidate: true })}
-                      className={`flex items-start gap-4 p-4 rounded-xl border text-left transition-all duration-200 ${
-                        selectedGoal === 'lose_weight'
-                          ? 'border-emerald-500 bg-emerald-500/5 shadow-lg shadow-emerald-500/5'
-                          : 'border-white/5 bg-white/[0.02] hover:bg-white/5'
-                      }`}
+                      className={`flex items-center gap-4 p-4 rounded-xl border text-left transition-all duration-200 cursor-pointer w-full hover:scale-[1.01] ${selectedGoal === 'lose_weight'
+                        ? 'border-emerald-500 bg-emerald-500/5 shadow-lg shadow-emerald-500/5'
+                        : 'border-white/5 bg-white/[0.02] hover:bg-white/5'
+                        }`}
                     >
-                      <div className="p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400 mt-0.5">
-                        <Flame className="h-5 w-5" />
+                      <div className="p-3 rounded-lg bg-emerald-500/10 text-emerald-400 mt-0.5 shrink-0">
+                        <Flame className="h-6 w-6" />
                       </div>
                       <div>
-                        <span className="block text-sm font-bold text-white mb-1">{t('goals.lose_weight')}</span>
+                        <span className="block text-sm font-bold text-white mb-0.5">{t('goals.lose_weight')}</span>
                         <span className="block text-xs text-slate-400 leading-normal">{t('goals.lose_weight_desc')}</span>
                       </div>
                     </button>
@@ -267,17 +249,16 @@ export default function OnboardingPage() {
                     <button
                       type="button"
                       onClick={() => setValue('goal', 'gain_muscle', { shouldValidate: true })}
-                      className={`flex items-start gap-4 p-4 rounded-xl border text-left transition-all duration-200 ${
-                        selectedGoal === 'gain_muscle'
-                          ? 'border-emerald-500 bg-emerald-500/5 shadow-lg shadow-emerald-500/5'
-                          : 'border-white/5 bg-white/[0.02] hover:bg-white/5'
-                      }`}
+                      className={`flex items-center gap-4 p-4 rounded-xl border text-left transition-all duration-200 cursor-pointer w-full hover:scale-[1.01] ${selectedGoal === 'gain_muscle'
+                        ? 'border-emerald-500 bg-emerald-500/5 shadow-lg shadow-emerald-500/5'
+                        : 'border-white/5 bg-white/[0.02] hover:bg-white/5'
+                        }`}
                     >
-                      <div className="p-2.5 rounded-lg bg-violet-500/10 text-violet-400 mt-0.5">
-                        <Dumbbell className="h-5 w-5" />
+                      <div className="p-3 rounded-lg bg-violet-500/10 text-violet-400 mt-0.5 shrink-0">
+                        <Dumbbell className="h-6 w-6" />
                       </div>
                       <div>
-                        <span className="block text-sm font-bold text-white mb-1">{t('goals.gain_muscle')}</span>
+                        <span className="block text-sm font-bold text-white mb-0.5">{t('goals.gain_muscle')}</span>
                         <span className="block text-xs text-slate-400 leading-normal">{t('goals.gain_muscle_desc')}</span>
                       </div>
                     </button>
@@ -286,17 +267,16 @@ export default function OnboardingPage() {
                     <button
                       type="button"
                       onClick={() => setValue('goal', 'maintain', { shouldValidate: true })}
-                      className={`flex items-start gap-4 p-4 rounded-xl border text-left transition-all duration-200 ${
-                        selectedGoal === 'maintain'
-                          ? 'border-emerald-500 bg-emerald-500/5 shadow-lg shadow-emerald-500/5'
-                          : 'border-white/5 bg-white/[0.02] hover:bg-white/5'
-                      }`}
+                      className={`flex items-center gap-4 p-4 rounded-xl border text-left transition-all duration-200 cursor-pointer w-full hover:scale-[1.01] ${selectedGoal === 'maintain'
+                        ? 'border-emerald-500 bg-emerald-500/5 shadow-lg shadow-emerald-500/5'
+                        : 'border-white/5 bg-white/[0.02] hover:bg-white/5'
+                        }`}
                     >
-                      <div className="p-2.5 rounded-lg bg-teal-500/10 text-teal-400 mt-0.5">
-                        <Award className="h-5 w-5" />
+                      <div className="p-3 rounded-lg bg-teal-500/10 text-teal-400 mt-0.5 shrink-0">
+                        <Award className="h-6 w-6" />
                       </div>
                       <div>
-                        <span className="block text-sm font-bold text-white mb-1">{t('goals.maintain')}</span>
+                        <span className="block text-sm font-bold text-white mb-0.5">{t('goals.maintain')}</span>
                         <span className="block text-xs text-slate-400 leading-normal">{t('goals.maintain_desc')}</span>
                       </div>
                     </button>
@@ -312,24 +292,24 @@ export default function OnboardingPage() {
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  className="space-y-6"
+                  className="space-y-6 flex flex-col items-center text-center w-full"
                 >
-                  <div className="space-y-4">
-                      <h3 className="text-xl font-bold text-white">
-                        {t('metrics.age_question')}
-                      </h3>
-                      <p className="text-slate-400 text-sm">
-                        {t('metrics.age_desc')}
-                      </p>
-                    </div>
+                  <div className="space-y-2">
+                    <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                      {t('metrics.age_question')}
+                    </h3>
+                    <p className="text-sm text-slate-400 max-w-sm mx-auto">
+                      {t('metrics.age_desc')}
+                    </p>
+                  </div>
 
-                  <div className="flex flex-col items-center py-6">
-                    <div className="relative max-w-[200px] w-full text-center">
+                  <div className="flex flex-col items-center py-6 w-full">
+                    <div className="flex items-center justify-center">
                       <input
                         type="number"
                         {...register('age')}
                         autoFocus
-                        className="w-full text-center text-5xl font-black bg-transparent border-b-2 border-white/10 hover:border-white/20 focus:border-emerald-500 focus:outline-none pb-2 text-white placeholder-slate-800"
+                        className="w-[90px] text-center text-5xl font-black bg-transparent border-0 border-b-2 border-emerald-500 pb-2 text-white placeholder-slate-800 focus:outline-none focus:border-emerald-400 transition-colors"
                         placeholder="25"
                       />
                     </div>
@@ -348,27 +328,27 @@ export default function OnboardingPage() {
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  className="space-y-6"
+                  className="space-y-6 flex flex-col items-center text-center w-full"
                 >
-                  <div className="space-y-4">
-                      <h3 className="text-xl font-bold text-white">
-                        {t('metrics.height_question')}
-                      </h3>
-                      <p className="text-slate-400 text-sm">
-                        {t('metrics.height_desc')}
-                      </p>
-                    </div>
+                  <div className="space-y-2">
+                    <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                      {t('metrics.height_question')}
+                    </h3>
+                    <p className="text-sm text-slate-400 max-w-sm mx-auto">
+                      {t('metrics.height_desc')}
+                    </p>
+                  </div>
 
-                  <div className="flex flex-col items-center py-6">
-                    <div className="relative max-w-[200px] w-full text-center flex items-end justify-center">
+                  <div className="flex flex-col items-center py-6 w-full">
+                    <div className="flex items-end justify-center gap-2">
                       <input
                         type="number"
                         {...register('height')}
                         autoFocus
-                        className="w-full text-center text-5xl font-black bg-transparent border-b-2 border-white/10 hover:border-white/20 focus:border-emerald-500 focus:outline-none pb-2 text-white placeholder-slate-800"
+                        className="w-[115px] text-center text-5xl font-black bg-transparent border-0 border-b-2 border-emerald-500 pb-2 text-white placeholder-slate-800 focus:outline-none focus:border-emerald-400 transition-colors"
                         placeholder="175"
                       />
-                      <span className="text-xl font-bold text-slate-500 ml-2 mb-2">cm</span>
+                      <span className="text-2xl sm:text-3xl font-black text-slate-500 pb-2">cm</span>
                     </div>
                     {errors.height && (
                       <p className="text-xs text-red-400 mt-3 text-center">{errors.height.message}</p>
@@ -385,27 +365,27 @@ export default function OnboardingPage() {
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  className="space-y-6"
+                  className="space-y-6 flex flex-col items-center text-center w-full"
                 >
-                  <div className="space-y-4">
-                      <h3 className="text-xl font-bold text-white">
-                        {t('metrics.weight_question')}
-                      </h3>
-                      <p className="text-slate-400 text-sm">
-                        {t('metrics.weight_desc')}
-                      </p>
-                    </div>
+                  <div className="space-y-2">
+                    <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                      {t('metrics.weight_question')}
+                    </h3>
+                    <p className="text-sm text-slate-400 max-w-sm mx-auto">
+                      {t('metrics.weight_desc')}
+                    </p>
+                  </div>
 
-                  <div className="flex flex-col items-center py-6">
-                    <div className="relative max-w-[200px] w-full text-center flex items-end justify-center">
+                  <div className="flex flex-col items-center py-6 w-full">
+                    <div className="flex items-end justify-center gap-2">
                       <input
                         type="number"
                         {...register('weight')}
                         autoFocus
-                        className="w-full text-center text-5xl font-black bg-transparent border-b-2 border-white/10 hover:border-white/20 focus:border-emerald-500 focus:outline-none pb-2 text-white placeholder-slate-800"
+                        className="w-[115px] text-center text-5xl font-black bg-transparent border-0 border-b-2 border-emerald-500 pb-2 text-white placeholder-slate-800 focus:outline-none focus:border-emerald-400 transition-colors"
                         placeholder="70"
                       />
-                      <span className="text-xl font-bold text-slate-500 ml-2 mb-2">kg</span>
+                      <span className="text-2xl sm:text-3xl font-black text-slate-500 pb-2">kg</span>
                     </div>
                     {errors.weight && (
                       <p className="text-xs text-red-400 mt-3 text-center">{errors.weight.message}</p>
@@ -422,26 +402,25 @@ export default function OnboardingPage() {
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  className="space-y-6"
+                  className="space-y-6 flex flex-col items-center text-center w-full"
                 >
-                  <div className="space-y-4">
-                      <h3 className="text-xl font-bold text-white">{t('metrics.activity')}</h3>
-                      <p className="text-slate-400 text-sm">
-                        {t('metrics.activity_question')}
-                      </p>
-                    </div>
+                  <div className="space-y-2">
+                    <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">{t('metrics.activity')}</h3>
+                    <p className="text-sm text-slate-400 max-w-sm mx-auto">
+                      {t('metrics.activity_question')}
+                    </p>
+                  </div>
 
-                  <div className="grid grid-cols-1 gap-3">
+                  <div className="grid grid-cols-1 gap-3 w-full">
                     {['sedentary', 'lightly_active', 'moderately_active', 'very_active'].map((level) => (
                       <button
                         key={level}
                         type="button"
                         onClick={() => setValue('activity_level', level as any, { shouldValidate: true })}
-                        className={`p-4 rounded-xl border text-left text-sm font-semibold transition-all duration-200 ${
-                          selectedActivity === level
-                            ? 'border-emerald-500 bg-emerald-500/5 text-white shadow-md'
-                            : 'border-white/5 bg-white/[0.02] hover:bg-white/5 text-slate-400'
-                        }`}
+                        className={`p-4 rounded-xl border text-left text-sm font-semibold transition-all duration-200 cursor-pointer w-full hover:scale-[1.01] ${selectedActivity === level
+                          ? 'border-emerald-500 bg-emerald-500/5 text-white shadow-md'
+                          : 'border-white/5 bg-white/[0.02] hover:bg-white/5 text-slate-400'
+                          }`}
                       >
                         {t(`metrics.${level}`)}
                       </button>
@@ -458,26 +437,25 @@ export default function OnboardingPage() {
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  className="space-y-6"
+                  className="space-y-6 flex flex-col items-center text-center w-full"
                 >
-                  <div className="space-y-4">
-                      <h3 className="text-xl font-bold text-white">
-                        {t('schedule.days_question')}
-                      </h3>
-                    </div>
+                  <div className="space-y-2">
+                    <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                      {t('schedule.days_question')}
+                    </h3>
+                  </div>
 
-                  <div className="flex justify-center py-6">
-                    <div className="flex flex-wrap justify-center gap-3 max-w-[340px]">
+                  <div className="flex justify-center py-6 w-full">
+                    <div className="flex flex-wrap justify-center items-center gap-4 max-w-md">
                       {[1, 2, 3, 4, 5, 6, 7].map((day) => (
                         <button
                           key={day}
                           type="button"
                           onClick={() => setValue('training_days', day, { shouldValidate: true })}
-                          className={`h-14 w-14 rounded-full border text-center font-black text-base transition-all duration-200 ${
-                            selectedDays === day
-                              ? 'border-emerald-500 bg-emerald-500/5 text-emerald-400 shadow-md'
-                              : 'border-white/5 bg-white/[0.02] hover:bg-white/5 text-slate-400'
-                          }`}
+                          className={`h-14 w-14 rounded-full border text-center font-black text-lg transition-all duration-200 cursor-pointer hover:scale-105 flex items-center justify-center ${selectedDays === day
+                            ? 'border-emerald-500 bg-emerald-500/5 text-emerald-400 shadow-md'
+                            : 'border-white/5 bg-white/[0.02] hover:bg-white/5 text-slate-400'
+                            }`}
                         >
                           {day}
                         </button>
@@ -495,25 +473,24 @@ export default function OnboardingPage() {
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  className="space-y-6"
+                  className="space-y-6 flex flex-col items-center text-center w-full"
                 >
-                  <div className="space-y-4 pt-6 border-t border-white/5">
-                      <h3 className="text-xl font-bold text-white">
-                        {t('schedule.equipment_question')}
-                      </h3>
-                    </div>
+                  <div className="space-y-2">
+                    <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                      {t('schedule.equipment_question')}
+                    </h3>
+                  </div>
 
-                  <div className="grid grid-cols-1 gap-3.5">
+                  <div className="grid grid-cols-1 gap-3.5 w-full">
                     {['none', 'dumbbells', 'full_gym'].map((eq) => (
                       <button
                         key={eq}
                         type="button"
                         onClick={() => setValue('equipment', eq as any, { shouldValidate: true })}
-                        className={`p-5 rounded-xl border text-center transition-all duration-200 ${
-                          selectedEquipment === eq
-                            ? 'border-emerald-500 bg-emerald-500/5 text-emerald-400 shadow-md'
-                            : 'border-white/5 bg-white/[0.02] hover:bg-white/5 text-slate-400'
-                        }`}
+                        className={`p-5 rounded-xl border text-center transition-all duration-200 cursor-pointer w-full hover:scale-[1.01] ${selectedEquipment === eq
+                          ? 'border-emerald-500 bg-emerald-500/5 text-emerald-400 shadow-md'
+                          : 'border-white/5 bg-white/[0.02] hover:bg-white/5 text-slate-400'
+                          }`}
                       >
                         <span className="block text-sm font-extrabold text-white">{t(`schedule.eq_${eq}`)}</span>
                       </button>
@@ -530,26 +507,25 @@ export default function OnboardingPage() {
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  className="space-y-6"
+                  className="space-y-6 flex flex-col items-center text-center w-full"
                 >
-                  <div className="space-y-4">
-                      <h3 className="text-xl font-bold text-white">{t('nutrition.title')}</h3>
-                      <p className="text-slate-400 text-sm">
-                        {t('nutrition.diet_question')}
-                      </p>
-                    </div>
+                  <div className="space-y-2">
+                    <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">{t('nutrition.title')}</h3>
+                    <p className="text-sm text-slate-400 max-w-sm mx-auto">
+                      {t('nutrition.diet_question')}
+                    </p>
+                  </div>
 
-                  <div className="grid grid-cols-1 gap-3">
+                  <div className="grid grid-cols-1 gap-3 w-full">
                     {['standard', 'vegetarian', 'vegan', 'keto', 'high_protein'].map((diet) => (
                       <button
                         key={diet}
                         type="button"
                         onClick={() => setValue('diet_preference', diet as any, { shouldValidate: true })}
-                        className={`p-4 rounded-xl border text-left text-sm font-semibold transition-all duration-200 ${
-                          selectedDiet === diet
-                            ? 'border-emerald-500 bg-emerald-500/5 text-white shadow-md'
-                            : 'border-white/5 bg-white/[0.02] hover:bg-white/5 text-slate-400'
-                        }`}
+                        className={`p-4 rounded-xl border text-left text-sm font-semibold transition-all duration-200 cursor-pointer w-full hover:scale-[1.01] ${selectedDiet === diet
+                          ? 'border-emerald-500 bg-emerald-500/5 text-white shadow-md'
+                          : 'border-white/5 bg-white/[0.02] hover:bg-white/5 text-slate-400'
+                          }`}
                       >
                         {t(`nutrition.${diet}`)}
                       </button>
@@ -567,13 +543,13 @@ export default function OnboardingPage() {
             </AnimatePresence>
 
             {/* Navigation buttons */}
-            <div className="flex justify-between items-center pt-6 border-t border-white/5 mt-8">
+            <div className="flex justify-between items-center pt-6 border-t border-white/5 mt-8 w-full">
               <Button
                 type="button"
                 variant="ghost"
                 onClick={prevStep}
                 disabled={step === 1 || saving}
-                className="flex items-center gap-1.5 text-slate-400 hover:text-white"
+                className="flex items-center gap-1.5 text-slate-400 hover:text-white cursor-pointer"
               >
                 <ChevronLeft className="h-4 w-4" />
                 {t('back')}
@@ -584,7 +560,7 @@ export default function OnboardingPage() {
                   key="next-btn"
                   type="button"
                   onClick={handleNext}
-                  className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:brightness-110 text-white font-bold h-11 px-6 rounded-lg"
+                  className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:brightness-110 text-white font-bold h-11 px-6 rounded-lg border-none cursor-pointer"
                 >
                   {t('next')}
                   <ChevronRight className="h-4 w-4" />
@@ -594,7 +570,7 @@ export default function OnboardingPage() {
                   key="finish-btn"
                   type="submit"
                   disabled={saving}
-                  className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:brightness-110 text-white font-bold h-11 px-6 rounded-lg shadow-lg"
+                  className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:brightness-110 text-white font-bold h-11 px-6 rounded-lg shadow-lg border-none cursor-pointer"
                 >
                   {saving ? (
                     <Loader2 className="h-4 w-4 animate-spin" />

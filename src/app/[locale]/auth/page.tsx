@@ -9,10 +9,12 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
-import { Dumbbell, Mail, Lock, User, AlertCircle, Loader2, CheckCircle2 } from 'lucide-react';
-import Link from 'next/link';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { toast } from 'sonner';
+import { Dumbbell, Mail, Lock, User, Loader2 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
-import { motion, AnimatePresence } from 'framer-motion';
 
 // Define shape statically for TypeScript types
 const staticAuthSchema = z.object({
@@ -41,8 +43,6 @@ export default function AuthPage() {
   const modeParam = searchParams.get('mode');
   const isLogin = modeParam !== 'signup';
   
-  const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const supabase = createClient();
 
@@ -50,15 +50,11 @@ export default function AuthPage() {
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [resetPending, setResetPending] = useState(false);
-  const [resetError, setResetError] = useState<string | null>(null);
-  const [resetSuccess, setResetSuccess] = useState<string | null>(null);
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    setResetError(null);
-    setResetSuccess(null);
     if (!resetEmail) {
-      setResetError(t('validation.emailInvalid'));
+      toast.error(t('validation.emailInvalid'));
       return;
     }
     setResetPending(true);
@@ -67,12 +63,13 @@ export default function AuthPage() {
         redirectTo: window.location.origin + `/${locale}/auth/callback?type=recovery`,
       });
       if (resetErr) {
-        setResetError(resetErr.message);
+        toast.error(resetErr.message);
       } else {
-        setResetSuccess(t('status.resetSuccess') || 'Password reset link sent! Check your inbox.');
+        toast.success(t('status.resetSuccess') || 'Password reset link sent! Check your inbox.');
+        setIsResetModalOpen(false);
       }
     } catch (err: any) {
-      setResetError(err.message || 'An error occurred');
+      toast.error(err.message || 'An error occurred');
     } finally {
       setResetPending(false);
     }
@@ -93,9 +90,6 @@ export default function AuthPage() {
   });
 
   const onSubmit = async (values: AuthFormValues) => {
-    setError(null);
-    setSuccessMessage(null);
-    
     startTransition(async () => {
       try {
         if (isLogin) {
@@ -105,7 +99,7 @@ export default function AuthPage() {
           });
           
           if (signInError) {
-            setError(t('status.loginFailed'));
+            toast.error(t('status.loginFailed'));
             return;
           }
         } else {
@@ -121,12 +115,12 @@ export default function AuthPage() {
           });
           
           if (signUpError) {
-            setError(t('status.signupFailed', { message: signUpError.message }));
+            toast.error(t('status.signupFailed', { message: signUpError.message }));
             return;
           }
 
           if (signUpData.user && !signUpData.session) {
-            setSuccessMessage(t('status.signupSuccess'));
+            toast.success(t('status.signupSuccess'));
             return;
           }
         }
@@ -149,14 +143,12 @@ export default function AuthPage() {
           }
         }
       } catch (err: any) {
-        setError(err.message || t('status.authError'));
+        toast.error(err.message || t('status.authError'));
       }
     });
   };
 
   const toggleMode = () => {
-    setError(null);
-    setSuccessMessage(null);
     reset();
     router.push(isLogin ? '/auth?mode=signup' : '/auth?mode=login');
   };
@@ -180,34 +172,20 @@ export default function AuthPage() {
 
           {/* Card wrapper */}
           <div className="rounded-2xl border border-white/10 bg-[#12121a]/80 p-8 shadow-2xl backdrop-blur-md">
-            {error && (
-              <div className="flex items-start gap-2.5 p-3.5 mb-6 rounded-xl border border-red-500/30 bg-red-500/5 text-red-200 text-sm">
-                <AlertCircle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
-                <span>{error}</span>
-              </div>
-            )}
-
-            {successMessage && (
-              <div className="flex items-start gap-2.5 p-3.5 mb-6 rounded-xl border border-emerald-500/30 bg-emerald-500/5 text-emerald-200 text-sm">
-                <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
-                <span>{successMessage}</span>
-              </div>
-            )}
-
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
               {/* Full Name (Sign Up only) */}
               {!isLogin && (
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                <div className="space-y-1.5 text-left">
+                  <Label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
                     {t('fullName')}
-                  </label>
+                  </Label>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
-                    <input
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 z-10" />
+                    <Input
                       id="auth-fullname-input"
                       type="text"
                       {...register('fullName')}
-                      className="w-full h-11 pl-10 pr-4 rounded-lg border border-white/10 bg-white/5 text-slate-100 text-sm placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 transition-colors"
+                      className="h-11 pl-10 border-white/10 bg-white/5 text-slate-100 placeholder-slate-500 focus-visible:border-emerald-500/50 focus-visible:ring-0"
                       placeholder={t('fullNamePlaceholder')}
                     />
                   </div>
@@ -215,17 +193,17 @@ export default function AuthPage() {
               )}
 
               {/* Email Address */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+              <div className="space-y-1.5 text-left">
+                <Label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
                   {t('email')}
-                </label>
+                </Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
-                  <input
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 z-10" />
+                  <Input
                     id="auth-email-input"
                     type="email"
                     {...register('email')}
-                    className="w-full h-11 pl-10 pr-4 rounded-lg border border-white/10 bg-white/5 text-slate-100 text-sm placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 transition-colors"
+                    className="h-11 pl-10 border-white/10 bg-white/5 text-slate-100 placeholder-slate-500 focus-visible:border-emerald-500/50 focus-visible:ring-0"
                     placeholder={t('emailPlaceholder')}
                     required
                   />
@@ -236,19 +214,17 @@ export default function AuthPage() {
               </div>
 
               {/* Password */}
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 text-left">
                 <div className="flex justify-between items-center">
-                  <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                  <Label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
                     {t('password')}
-                  </label>
+                  </Label>
                   {isLogin && (
                     <button
                       id="auth-forgot-password-btn"
                       type="button"
                       onClick={() => {
                         setResetEmail('');
-                        setResetError(null);
-                        setResetSuccess(null);
                         setIsResetModalOpen(true);
                       }}
                       className="text-xs font-medium text-emerald-400 hover:text-emerald-300 transition-colors"
@@ -258,12 +234,12 @@ export default function AuthPage() {
                   )}
                 </div>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
-                  <input
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 z-10" />
+                  <Input
                     id="auth-password-input"
                     type="password"
                     {...register('password')}
-                    className="w-full h-11 pl-10 pr-4 rounded-lg border border-white/10 bg-white/5 text-slate-100 text-sm placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 transition-colors"
+                    className="h-11 pl-10 border-white/10 bg-white/5 text-slate-100 placeholder-slate-500 focus-visible:border-emerald-500/50 focus-visible:ring-0"
                     placeholder={t('passwordPlaceholder')}
                     required
                   />
@@ -278,7 +254,7 @@ export default function AuthPage() {
                 id="auth-submit-btn"
                 type="submit"
                 disabled={isPending}
-                className="w-full h-11 mt-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:brightness-110 text-white font-bold rounded-lg shadow-lg shadow-emerald-500/10 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                className="w-full h-11 mt-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:brightness-110 text-white font-bold rounded-lg shadow-lg shadow-emerald-500/10 transition-all active:scale-[0.98] flex items-center justify-center gap-2 border-none"
               >
                 {isPending ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -296,7 +272,7 @@ export default function AuthPage() {
                 id="auth-toggle-mode-btn"
                 type="button"
                 onClick={toggleMode}
-                className="text-xs text-slate-400 hover:text-white transition-colors"
+                className="text-xs text-slate-400 hover:text-white transition-colors bg-transparent border-none cursor-pointer"
               >
                 {isLogin ? t('noAccount') : t('hasAccount')}
               </button>
@@ -304,85 +280,45 @@ export default function AuthPage() {
           </div>
         </div>
 
-        {/* PASSWORD RESET MODAL */}
-        <AnimatePresence>
-          {isResetModalOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setIsResetModalOpen(false)}
-                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-              />
+        {/* PASSWORD RESET DIALOG */}
+        <Dialog open={isResetModalOpen} onOpenChange={setIsResetModalOpen}>
+          <DialogContent className="max-w-sm rounded-2xl border border-white/10 bg-[#161622] p-6 shadow-2xl space-y-4 text-left">
+            <DialogHeader className="border-b border-white/5 pb-3">
+              <DialogTitle className="text-base font-bold text-white text-left">
+                {t('forgotPasswordTitle')}
+              </DialogTitle>
+            </DialogHeader>
 
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                className="relative w-full max-w-sm rounded-2xl border border-white/10 bg-[#161622] p-6 shadow-2xl z-10 space-y-4"
+            <form onSubmit={handleResetPassword} className="space-y-4">
+              <DialogDescription className="text-xs text-slate-400 leading-relaxed font-semibold text-left">
+                {t('forgotPasswordDesc')}
+              </DialogDescription>
+              
+              <div className="space-y-1.5">
+                <Input
+                  type="email"
+                  required
+                  value={resetEmail}
+                  onChange={(e) => setResetEmail(e.target.value)}
+                  placeholder={t('emailPlaceholder')}
+                  className="h-10 px-3.5 border-white/10 bg-white/5 text-slate-100 text-xs focus-visible:border-emerald-500/50 focus-visible:ring-0"
+                />
+              </div>
+
+              <Button
+                type="submit"
+                disabled={resetPending}
+                className="w-full h-10 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:brightness-110 text-white font-bold rounded-lg shadow-lg flex items-center justify-center gap-1.5 text-xs border-none"
               >
-                <div className="flex items-center justify-between border-b border-white/5 pb-3">
-                  <h3 className="text-base font-bold text-white">
-                    {t('forgotPasswordTitle')}
-                  </h3>
-                  <button
-                    onClick={() => {
-                      setIsResetModalOpen(false);
-                      setResetError(null);
-                      setResetSuccess(null);
-                    }}
-                    className="text-slate-500 hover:text-white"
-                  >
-                    ✕
-                  </button>
-                </div>
-
-                {resetError && (
-                  <div className="flex items-start gap-2.5 p-3 rounded-lg border border-red-500/30 bg-red-500/5 text-red-200 text-xs">
-                    <AlertCircle className="h-4.5 w-4.5 text-red-400 shrink-0 mt-0.5" />
-                    <span>{resetError}</span>
-                  </div>
+                {resetPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  t('sendResetLink')
                 )}
-
-                {resetSuccess && (
-                  <div className="flex items-start gap-2.5 p-3 rounded-lg border border-emerald-500/30 bg-emerald-500/5 text-emerald-200 text-xs">
-                    <CheckCircle2 className="h-4.5 w-4.5 text-emerald-400 shrink-0 mt-0.5" />
-                    <span>{resetSuccess}</span>
-                  </div>
-                )}
-
-                <form onSubmit={handleResetPassword} className="space-y-4">
-                  <p className="text-xs text-slate-400 leading-relaxed font-semibold">
-                    {t('forgotPasswordDesc')}
-                  </p>
-                  <div className="space-y-1.5">
-                    <input
-                      type="email"
-                      required
-                      value={resetEmail}
-                      onChange={(e) => setResetEmail(e.target.value)}
-                      placeholder={t('emailPlaceholder')}
-                      className="w-full h-10 px-3.5 rounded-lg border border-white/10 bg-white/5 text-slate-100 text-xs focus:outline-none focus:border-emerald-500/50"
-                    />
-                  </div>
-
-                  <Button
-                    type="submit"
-                    disabled={resetPending}
-                    className="w-full h-10 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:brightness-110 text-white font-bold rounded-lg shadow-lg flex items-center justify-center gap-1.5 text-xs animate-pulse"
-                  >
-                    {resetPending ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      t('sendResetLink')
-                    )}
-                  </Button>
-                </form>
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
 
       </div>
     </div>

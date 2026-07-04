@@ -8,6 +8,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card } from '@/components/ui/card';
+import { toast } from 'sonner';
 import { 
   ChevronLeft, 
   Loader2, 
@@ -16,9 +20,7 @@ import {
   Target, 
   Calendar, 
   Apple,
-  Settings as SettingsIcon,
-  CheckCircle2,
-  AlertCircle
+  Settings as SettingsIcon
 } from 'lucide-react';
 
 const profileBaseSchema = z.object({
@@ -43,7 +45,6 @@ export default function SettingsPage() {
   
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   
   const supabase = createClient();
 
@@ -117,8 +118,6 @@ export default function SettingsPage() {
   }, [router, supabase, reset]);
 
   const onSubmit = async (values: ProfileValues) => {
-    setSaving(false);
-    setMessage(null);
     setSaving(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -141,10 +140,10 @@ export default function SettingsPage() {
 
       if (error) throw error;
       
-      setMessage({ type: 'success', text: tSettings('saveSuccess') });
+      toast.success(tSettings('saveSuccess') || 'Settings saved successfully!');
     } catch (err) {
       console.error('Error updating profile:', err);
-      setMessage({ type: 'error', text: tSettings('saveError') });
+      toast.error(tSettings('saveError') || 'Failed to save settings.');
     } finally {
       setSaving(false);
     }
@@ -170,7 +169,7 @@ export default function SettingsPage() {
           <Button
             variant="ghost"
             onClick={() => router.push('/dashboard')}
-            className="flex items-center gap-1.5 text-slate-400 hover:text-white"
+            className="flex items-center gap-1.5 text-slate-400 hover:text-white cursor-pointer"
           >
             <ChevronLeft className="h-4 w-4" />
             {tSettings('backToDashboard')}
@@ -182,28 +181,12 @@ export default function SettingsPage() {
           </h1>
         </div>
 
-        {/* Message Banner */}
-        {message && (
-          <div className={`flex items-start gap-2.5 p-4 rounded-xl border ${
-            message.type === 'success' 
-              ? 'border-emerald-500/30 bg-emerald-500/5 text-emerald-200' 
-              : 'border-red-500/30 bg-red-500/5 text-red-200'
-          }`}>
-            {message.type === 'success' ? (
-              <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
-            ) : (
-              <AlertCircle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
-            )}
-            <span>{message.text}</span>
-          </div>
-        )}
-
         {/* Unified Form Panel */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             {/* Goal selection (left side) */}
-            <div className="rounded-2xl border border-white/10 bg-[#12121a]/80 p-6 space-y-4">
+            <Card className="border-white/10 bg-[#12121a]/80 p-6 space-y-4 ring-0 text-left">
               <h2 className="text-sm font-bold text-slate-300 flex items-center gap-2 pb-2 border-b border-white/5">
                 <Target className="h-4 w-4 text-emerald-400" />
                 {t('goals.title')}
@@ -215,7 +198,7 @@ export default function SettingsPage() {
                     key={goal}
                     type="button"
                     onClick={() => setValue('goal', goal as any)}
-                    className={`w-full flex justify-between items-center p-3 rounded-lg border text-left text-xs font-semibold transition-all duration-200 ${
+                    className={`w-full flex justify-between items-center p-3 rounded-lg border text-left text-xs font-semibold transition-all duration-200 cursor-pointer ${
                       selectedGoal === goal
                         ? 'border-emerald-500 bg-emerald-500/5 text-white'
                         : 'border-white/5 bg-white/[0.01] hover:bg-white/5 text-slate-400'
@@ -225,10 +208,10 @@ export default function SettingsPage() {
                   </button>
                 ))}
               </div>
-            </div>
+            </Card>
 
             {/* Metrics (right side) */}
-            <div className="rounded-2xl border border-white/10 bg-[#12121a]/80 p-6 space-y-4">
+            <Card className="border-white/10 bg-[#12121a]/80 p-6 space-y-4 ring-0 text-left">
               <h2 className="text-sm font-bold text-slate-300 flex items-center gap-2 pb-2 border-b border-white/5">
                 <Scale className="h-4 w-4 text-emerald-400" />
                 {t('metrics.title')}
@@ -236,33 +219,33 @@ export default function SettingsPage() {
 
               <div className="grid grid-cols-3 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{t('metrics.age')}</label>
-                  <input
+                  <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{t('metrics.age')}</Label>
+                  <Input
                     type="number"
                     {...register('age')}
-                    className="w-full h-10 px-3 rounded-lg border border-white/10 bg-white/5 text-slate-100 text-xs focus:outline-none focus:border-emerald-500/50"
+                    className="h-10 border-white/10 bg-white/5 text-slate-100 text-xs focus-visible:border-emerald-500/50 focus-visible:ring-0"
                   />
                   {errors.age && (
                     <p className="text-[10px] text-red-400 font-semibold leading-tight mt-1">{errors.age.message}</p>
                   )}
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{t('metrics.height')}</label>
-                  <input
+                  <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{t('metrics.height')}</Label>
+                  <Input
                     type="number"
                     {...register('height')}
-                    className="w-full h-10 px-3 rounded-lg border border-white/10 bg-white/5 text-slate-100 text-xs focus:outline-none focus:border-emerald-500/50"
+                    className="h-10 border-white/10 bg-white/5 text-slate-100 text-xs focus-visible:border-emerald-500/50 focus-visible:ring-0"
                   />
                   {errors.height && (
                     <p className="text-[10px] text-red-400 font-semibold leading-tight mt-1">{errors.height.message}</p>
                   )}
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{t('metrics.weight')}</label>
-                  <input
+                  <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{t('metrics.weight')}</Label>
+                  <Input
                     type="number"
                     {...register('weight')}
-                    className="w-full h-10 px-3 rounded-lg border border-white/10 bg-white/5 text-slate-100 text-xs focus:outline-none focus:border-emerald-500/50"
+                    className="h-10 border-white/10 bg-white/5 text-slate-100 text-xs focus-visible:border-emerald-500/50 focus-visible:ring-0"
                   />
                   {errors.weight && (
                     <p className="text-[10px] text-red-400 font-semibold leading-tight mt-1">{errors.weight.message}</p>
@@ -271,14 +254,14 @@ export default function SettingsPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{t('metrics.activity')}</label>
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{t('metrics.activity')}</Label>
                 <div className="grid grid-cols-2 gap-2">
                   {['sedentary', 'lightly_active', 'moderately_active', 'very_active'].map((level) => (
                     <button
                       key={level}
                       type="button"
                       onClick={() => setValue('activity_level', level as any)}
-                      className={`p-2 rounded-lg border text-left text-[11px] font-medium transition-all duration-200 ${
+                      className={`p-2 rounded-lg border text-left text-[11px] font-medium transition-all duration-200 cursor-pointer ${
                         selectedActivity === level
                           ? 'border-emerald-500 bg-emerald-500/5 text-white'
                           : 'border-white/5 bg-white/[0.01] hover:bg-white/5 text-slate-400'
@@ -289,24 +272,24 @@ export default function SettingsPage() {
                   ))}
                 </div>
               </div>
-            </div>
+            </Card>
 
             {/* Schedule (bottom left) */}
-            <div className="rounded-2xl border border-white/10 bg-[#12121a]/80 p-6 space-y-4">
+            <Card className="border-white/10 bg-[#12121a]/80 p-6 space-y-4 ring-0 text-left">
               <h2 className="text-sm font-bold text-slate-300 flex items-center gap-2 pb-2 border-b border-white/5">
                 <Calendar className="h-4 w-4 text-emerald-400" />
                 {t('schedule.title')}
               </h2>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{t('schedule.days')}</label>
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{t('schedule.days')}</Label>
                 <div className="flex gap-1.5">
                   {[1, 2, 3, 4, 5, 6, 7].map((day) => (
                     <button
                       key={day}
                       type="button"
                       onClick={() => setValue('training_days', day)}
-                      className={`flex-1 h-9 rounded-lg border text-center font-bold text-xs transition-all duration-200 ${
+                      className={`flex-1 h-9 rounded-lg border text-center font-bold text-xs transition-all duration-200 cursor-pointer ${
                         selectedDays === day
                           ? 'border-emerald-500 bg-emerald-500/5 text-emerald-400'
                           : 'border-white/5 bg-white/[0.01] hover:bg-white/5 text-slate-400'
@@ -319,14 +302,14 @@ export default function SettingsPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{t('schedule.equipment')}</label>
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{t('schedule.equipment')}</Label>
                 <div className="grid grid-cols-3 gap-2">
                   {['none', 'dumbbells', 'full_gym'].map((eq) => (
                     <button
                       key={eq}
                       type="button"
                       onClick={() => setValue('equipment', eq as any)}
-                      className={`p-2 rounded-lg border text-center transition-all duration-200 ${
+                      className={`p-2 rounded-lg border text-center transition-all duration-200 cursor-pointer ${
                         selectedEquipment === eq
                           ? 'border-emerald-500 bg-emerald-500/5 text-emerald-400'
                           : 'border-white/5 bg-white/[0.01] hover:bg-white/5 text-slate-400'
@@ -337,24 +320,24 @@ export default function SettingsPage() {
                   ))}
                 </div>
               </div>
-            </div>
+            </Card>
 
             {/* Nutrition (bottom right) */}
-            <div className="rounded-2xl border border-white/10 bg-[#12121a]/80 p-6 space-y-4">
+            <Card className="border-white/10 bg-[#12121a]/80 p-6 space-y-4 ring-0 text-left">
               <h2 className="text-sm font-bold text-slate-300 flex items-center gap-2 pb-2 border-b border-white/5">
                 <Apple className="h-4 w-4 text-emerald-400" />
                 {t('nutrition.title')}
               </h2>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{t('nutrition.diet')}</label>
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{t('nutrition.diet')}</Label>
                 <div className="grid grid-cols-1 gap-2">
                   {['standard', 'vegetarian', 'vegan', 'keto', 'high_protein'].map((diet) => (
                     <button
                       key={diet}
                       type="button"
                       onClick={() => setValue('diet_preference', diet as any)}
-                      className={`p-2.5 rounded-lg border text-left text-xs font-semibold transition-all duration-200 ${
+                      className={`p-2.5 rounded-lg border text-left text-xs font-semibold transition-all duration-200 cursor-pointer ${
                         selectedDiet === diet
                           ? 'border-emerald-500 bg-emerald-500/5 text-white'
                           : 'border-white/5 bg-white/[0.01] hover:bg-white/5 text-slate-400'
@@ -365,7 +348,7 @@ export default function SettingsPage() {
                   ))}
                 </div>
               </div>
-            </div>
+            </Card>
 
           </div>
 
@@ -374,7 +357,7 @@ export default function SettingsPage() {
             <Button
               type="submit"
               disabled={saving}
-              className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:brightness-110 text-white font-bold h-11 px-8 rounded-lg shadow-lg flex items-center gap-2"
+              className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:brightness-110 text-white font-bold h-11 px-8 rounded-lg shadow-lg flex items-center gap-2 border-none cursor-pointer"
             >
               {saving ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
