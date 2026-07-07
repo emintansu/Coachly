@@ -67,7 +67,9 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
     selectedPlanId, 
     setSelectedPlanId, 
     selectedDayIdx, 
-    setSelectedDayIdx 
+    setSelectedDayIdx,
+    isGeneratingPlan,
+    setIsGeneratingPlan
   } = useCoachStore();
   
   // Modal states
@@ -99,28 +101,28 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
   // Fallback to latest plan if selectedPlanId is empty or not in lists
   const activePlan = plans.find(p => p.id === selectedPlanId) || plans[0];
 
-  // AI Plan Generation Mutation
-  const generateMutation = useMutation({
-    mutationFn: async () => {
+  // AI Plan Generation Handler
+  const handleGeneratePlan = async () => {
+    if (isGeneratingPlan) return;
+    setIsGeneratingPlan(true);
+    try {
       const result = await generateWorkoutPlan(locale);
       if (!result.success) {
         throw new Error(result.error);
       }
-      return result.plan;
-    },
-    onSuccess: (newPlan) => {
       queryClient.invalidateQueries({ queryKey: ['workout_plans'] });
-      if (newPlan) {
-        setSelectedPlanId(newPlan.id);
+      if (result.plan) {
+        setSelectedPlanId(result.plan.id);
         setSelectedDayIdx(0);
       }
       toast.success(t('planGeneratedSuccess') || 'New workout plan generated successfully!');
-    },
-    onError: (err: any) => {
+    } catch (err: any) {
       console.error(err);
       toast.error(t('errorGeneration'));
+    } finally {
+      setIsGeneratingPlan(false);
     }
-  });
+  };
 
   // Edit Exercise Mutation
   const updatePlanMutation = useMutation({
@@ -303,11 +305,11 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
 
           {/* AI Generator Action */}
           <Button
-            onClick={() => generateMutation.mutate()}
-            disabled={generateMutation.isPending}
+            onClick={handleGeneratePlan}
+            disabled={isGeneratingPlan}
             className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:brightness-110 text-white font-extrabold h-11 shadow-lg shadow-emerald-500/10 flex items-center justify-center gap-2 rounded-xl text-xs border-none cursor-pointer"
           >
-            {generateMutation.isPending ? (
+            {isGeneratingPlan ? (
               <>
                 <Loader2 className="h-4.5 w-4.5 animate-spin" />
                 <span>{t('generating')}</span>
@@ -326,7 +328,7 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
       <main className="flex-1 flex flex-col min-w-0">
         
         {/* Loading overlay */}
-        {generateMutation.isPending && (
+        {isGeneratingPlan && (
           <Card className="flex-1 flex flex-col justify-center items-center border-white/10 bg-[#12121a]/85 p-8 shadow-xl backdrop-blur-md min-h-[400px] ring-0">
             <Loader2 className="h-9 w-9 animate-spin text-emerald-400 mb-4" />
             <h2 className="text-xl font-bold text-white mb-2">{t('generating')}</h2>
@@ -337,7 +339,7 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
         )}
 
         {/* Empty Active Plan */}
-        {!generateMutation.isPending && !activePlan && (
+        {!isGeneratingPlan && !activePlan && (
           <Card className="flex-1 flex flex-col justify-center items-center border-white/10 bg-[#12121a]/85 p-8 shadow-xl backdrop-blur-md min-h-[400px] text-center space-y-6 ring-0">
             <div className="h-16 w-16 rounded-full bg-white/5 flex items-center justify-center text-slate-500">
               <Dumbbell className="h-8 w-8 animate-bounce" />
@@ -347,7 +349,7 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
               <p className="text-sm text-slate-400 max-w-sm mx-auto">{t('noActivePlan')}</p>
             </div>
             <Button
-              onClick={() => generateMutation.mutate()}
+              onClick={handleGeneratePlan}
               className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:brightness-110 text-white font-extrabold h-12 px-8 rounded-xl shadow-lg shadow-emerald-500/10 flex items-center gap-2 border-none cursor-pointer"
             >
               <Plus className="h-5 w-5" />
@@ -357,7 +359,7 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
         )}
 
         {/* Plan display panel */}
-        {!generateMutation.isPending && activePlan && (
+        {!isGeneratingPlan && activePlan && (
           <div className="flex-grow space-y-6">
             
             {/* Header controls bar */}

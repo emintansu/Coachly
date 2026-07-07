@@ -203,6 +203,9 @@
     "errorTitle": "Bir Hata Oluştu",
     "errorGeneration": "Plan oluşturulurken hata oluştu. Lütfen tekrar deneyin.",
     "errorUpdate": "Egzersiz güncellenirken hata oluştu. Lütfen tekrar deneyin.",
-    "errorDeletion": "Antrenman planı silinirken hata oluştu. Lütfen tekrar deneyin."
+    "errorDeletion": "Antrenman planı silinirken hata oluştu. Lütfen tekrar deneyin.",
+    "planGeneratedSuccess": "Yeni antrenman planı başarıyla oluşturuldu!",
+    "exerciseUpdatedSuccess": "Egzersiz detayları başarıyla güncellendi!",
+    "planDeletedSuccess": "Antrenman planı başarıyla silindi."
   }
 }

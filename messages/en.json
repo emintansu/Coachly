@@ -203,6 +203,9 @@
     "errorTitle": "An Error Occurred",
     "errorGeneration": "Plan generation failed. Please try again.",
     "errorUpdate": "Failed to update exercise. Please try again.",
-    "errorDeletion": "Failed to delete workout plan. Please try again."
+    "errorDeletion": "Failed to delete workout plan. Please try again.",
+    "planGeneratedSuccess": "New workout plan generated successfully!",
+    "exerciseUpdatedSuccess": "Exercise details updated successfully!",
+    "planDeletedSuccess": "Workout plan deleted successfully."
   }
 }
