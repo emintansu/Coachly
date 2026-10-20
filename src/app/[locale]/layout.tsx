@@ -53,9 +53,9 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className="h-full dark" style={{ colorScheme: "dark" }}>
+    <html lang={locale} className={`${geistSans.variable} ${geistMono.variable} h-full dark`} style={{ colorScheme: "dark" }}>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} min-h-full flex flex-col bg-[#09090e] text-slate-100 antialiased selection:bg-emerald-500/25 selection:text-emerald-200`}
+        className={`${geistSans.variable} ${geistMono.variable} font-sans min-h-full flex flex-col bg-[#09090e] text-slate-100 antialiased selection:bg-emerald-500/25 selection:text-emerald-200`}
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
           <QueryProvider>
