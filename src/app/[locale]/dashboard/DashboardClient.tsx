@@ -85,7 +85,7 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
   } | null>(null);
 
   // Fetch saved plans
-  const { data: plans = [], isLoading: isLoadingPlans } = useQuery({
+  const { data: plans = [], isLoading: isLoadingPlans } = useQuery<any[]>({
     queryKey: ['workout_plans'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -94,12 +94,12 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     }
   });
 
   // Fallback to latest plan if selectedPlanId is empty or not in lists
-  const activePlan = plans.find(p => p.id === selectedPlanId) || plans[0];
+  const activePlan = plans.find((p: any) => p.id === selectedPlanId) || plans[0];
 
   // AI Plan Generation Handler
   const handleGeneratePlan = async () => {
@@ -278,7 +278,7 @@ export default function DashboardClient({ initialProfile, userEmail }: Dashboard
             <span className="block text-xs text-slate-500 font-medium">{t('noPlansFound')}</span>
           ) : (
             <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
-              {plans.map((p) => (
+              {plans.map((p: any) => (
                 <button
                   key={p.id}
                   onClick={() => {

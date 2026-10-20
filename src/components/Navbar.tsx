@@ -30,7 +30,7 @@ export default function Navbar() {
     getSession();
 
     // Listen for auth state changes to dynamically update login status
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
       setUser(session?.user ?? null);
       setLoading(false);
     });
